@@ -76,7 +76,7 @@
 
                 <!-- Daily Trackers Grid (Adaptive & Clickable) -->
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Trends)</h3>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Real Data & Trends)</h3>
                     <div class="grid grid-cols-2 gap-3">
                         <div onclick="openTrendModal('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
                             <div class="flex items-center text-blue-600 dark:text-blue-400 space-x-2">
@@ -709,10 +709,8 @@
                     }
                 }
 
-                // Fetch latest saved profile & settings from Supabase
                 await fetchUserDataFromCloud();
 
-                // Swap login card to "Connected" status
                 const cloudSyncSection = document.querySelector('#screen-settings .bg-slate-50.dark\\:bg-slate-800.p-5');
                 if (cloudSyncSection) {
                     cloudSyncSection.innerHTML = `
@@ -1031,7 +1029,7 @@
             switchTab('home');
         }
 
-        // DAILY TREND MODAL LOGIC
+        // DYNAMIC ADAPTIVE TREND & LOG MODAL LOGIC
         function openTrendModal(type) {
             const modal = document.getElementById('trend-modal');
             const titleEl = document.getElementById('trend-modal-title');
@@ -1045,9 +1043,9 @@
             let html = '';
 
             if (type === 'steps') {
-                titleEl.innerText = "👟 Step Count 7-Day Trend";
-                subtitleEl.innerText = "Daily walking and step volume overview.";
-                let mockSteps = [3200, 7800, 10200, 6400, 9100, 4500, currentSteps];
+                titleEl.innerText = "👟 Step Count & History";
+                subtitleEl.innerText = "Live step progression anchored to your current logs.";
+                let mockSteps = [0, 0, 0, 0, 0, 0, currentSteps];
                 
                 days.forEach((day, idx) => {
                     let val = mockSteps[idx];
@@ -1063,10 +1061,10 @@
                     `;
                 });
             } else if (type === 'calories') {
-                titleEl.innerText = "🔥 Calories Burned 7-Day Trend";
-                subtitleEl.innerText = "Active and resting caloric expenditure.";
+                titleEl.innerText = "🔥 Calories Logged & History";
+                subtitleEl.innerText = "Total caloric intake tracked from your meals.";
                 let calsLogged = loggedMeals.reduce((acc, m) => acc + m.calories, 0);
-                let mockCals = [380, 520, 610, 440, 580, 310, calsLogged];
+                let mockCals = [0, 0, 0, 0, 0, 0, calsLogged];
 
                 days.forEach((day, idx) => {
                     let val = mockCals[idx];
@@ -1074,16 +1072,16 @@
                         <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
                             <span class="text-xs font-bold text-slate-700 dark:text-slate-300 w-10">${day} ${idx === todayIdx ? '(Today)' : ''}</span>
                             <div class="flex-1 mx-3 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
-                                <div class="bg-orange-500 h-2 rounded-full" style="width: ${Math.min(100, (val/800)*100)}%"></div>
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: ${Math.min(100, (val/2500)*100)}%"></div>
                             </div>
                             <span class="text-xs font-bold text-orange-500">${val} kcal</span>
                         </div>
                     `;
                 });
             } else if (type === 'water') {
-                titleEl.innerText = "💧 Water Intake 7-Day Trend";
-                subtitleEl.innerText = "Hydration volume tracking per day.";
-                let mockWater = [2.2, 3.0, 2.8, 3.2, 2.5, 2.1, currentWater];
+                titleEl.innerText = "💧 Water Intake & History";
+                subtitleEl.innerText = "Actual hydration volume logged today.";
+                let mockWater = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, currentWater];
 
                 days.forEach((day, idx) => {
                     let val = mockWater[idx];
@@ -1099,9 +1097,9 @@
                     `;
                 });
             } else if (type === 'sleep') {
-                titleEl.innerText = "🌙 Sleep Duration 7-Day Trend";
-                subtitleEl.innerText = "Restfulness and hours slept per night.";
-                let mockSleep = [7.2, 8.0, 6.5, 7.8, 8.2, 7.0, currentSleep];
+                titleEl.innerText = "🌙 Sleep Duration & History";
+                subtitleEl.innerText = "Logged hours slept per night.";
+                let mockSleep = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, currentSleep];
 
                 days.forEach((day, idx) => {
                     let val = mockSleep[idx];
@@ -1383,8 +1381,10 @@
             const distanceKm = (currentSteps * 0.00075).toFixed(1);
             const activeMins = Math.round(currentSteps / 100);
             const estBurn = Math.round(currentSteps * 0.04);
+            const percentage = Math.min(100, Math.round((currentSteps / goalSteps) * 100));
 
             document.getElementById('dashboard-steps').innerText = currentSteps.toLocaleString();
+            document.getElementById('steps-percentage').innerText = percentage + '%';
             document.getElementById('steps-distance').innerText = distanceKm + ' km';
             document.getElementById('steps-time').innerText = `${Math.floor(activeMins / 60)}h ${activeMins % 60}m`;
             document.getElementById('steps-burn').innerText = `${estBurn} kcal`;
