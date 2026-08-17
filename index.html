@@ -16,13 +16,13 @@
         .screen.active { display: flex; }
     </style>
 </head>
-<body class="bg-slate-100 flex justify-center items-center min-h-screen">
+<body class="bg-slate-900 flex justify-center items-center min-h-screen m-0 p-0 overflow-hidden">
 
-    <!-- App Container (Simulating Mobile View) -->
-    <div class="w-full max-w-md bg-white min-h-screen md:min-h-[844px] md:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative">
+    <!-- Strict Mobile Viewport Container -->
+    <div class="w-full sm:max-w-[390px] h-screen sm:h-[844px] bg-white sm:rounded-[40px] sm:border-8 sm:border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
         
-        <!-- App Header -->
-        <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white sticky top-0 z-10 border-b border-slate-100">
+        <!-- App Header (Sticky) -->
+        <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-slate-100 shrink-0">
             <div>
                 <h1 class="text-xs font-semibold uppercase tracking-wider text-emerald-600">PulseFit</h1>
                 <h2 id="header-title" class="text-xl font-bold text-slate-800">Today's Overview</h2>
@@ -33,7 +33,7 @@
         </header>
 
         <!-- Main Scrollable Content Area -->
-        <main class="flex-1 overflow-y-auto p-6 pb-28 relative">
+        <main class="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
             
             <!-- SCREEN 1: HOME DASHBOARD -->
             <div id="screen-home" class="screen active flex-col space-y-6">
@@ -191,8 +191,8 @@
         </main>
 
         <!-- Recipe Details Modal -->
-        <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-            <div class="bg-white h-[75%] sm:h-auto w-full rounded-t-3xl sm:rounded-2xl p-6 flex flex-col shadow-2xl relative animate-in fade-in slide-in-from-bottom duration-200">
+        <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white h-[75%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative animate-in fade-in slide-in-from-bottom duration-200">
                 <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -220,8 +220,8 @@
             </div>
         </div>
 
-        <!-- Bottom Navigation Bar -->
-        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shadow-lg z-20">
+        <!-- Sticky Bottom Navigation Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shadow-lg z-20 shrink-0">
             <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-emerald-600 transition">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium mt-1">Home</span>
@@ -246,7 +246,6 @@
     <script>
         lucide.createIcons();
 
-        // Massive 100+ Healthy Recipe Database with Full Instructions & Macros
         const recipeDatabase = [
             { name: "Grilled Chicken & Broccoli Bowl", ingredients: ["chicken", "broccoli", "rice"], calories: 480, protein: 42, fiber: 6, instructions: ["Season chicken breast with salt, pepper, and garlic powder.", "Grill chicken over medium heat for 6-7 minutes per side until fully cooked.", "Steam broccoli florets until tender-crisp.", "Serve grilled chicken and broccoli over a warm bed of cooked rice."] },
             { name: "Chicken & Quinoa Salad", ingredients: ["chicken", "quinoa", "spinach", "cucumber"], calories: 410, protein: 38, fiber: 5, instructions: ["Cook quinoa according to package instructions and let cool.", "Chop spinach and dice cucumbers.", "Slice grilled chicken breast.", "Toss all ingredients together with a light olive oil and lemon dressing."] },
