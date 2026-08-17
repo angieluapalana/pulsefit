@@ -65,34 +65,34 @@
                 <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
                         <span>🔥</span>
-                        <span id="streak-counter">5 Day Streak</span>
+                        <span id="streak-counter">0 Day Streak</span>
                     </div>
                     <p class="text-emerald-100 text-sm font-medium">Welcome back, <span id="welcome-name">Alex</span>!</p>
-                    <h3 class="text-lg font-bold mt-1 leading-snug">You are <span id="steps-remaining">2,400</span> steps away from your daily goal.</h3>
+                    <h3 class="text-lg font-bold mt-1 leading-snug">You are <span id="steps-remaining">10,000</span> steps away from your daily goal.</h3>
                     <div class="mt-4 w-full bg-emerald-900/30 rounded-full h-2">
-                        <div id="steps-progress-bar" class="bg-white h-2 rounded-full w-3/4"></div>
+                        <div id="steps-progress-bar" class="bg-white h-2 rounded-full w-0"></div>
                     </div>
                 </div>
 
-                <!-- Daily Trackers Grid (Interactive) -->
+                <!-- Daily Trackers Grid (Clickable for Trends) -->
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap to Update)</h3>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Trends)</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div onclick="switchTab('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
+                        <div onclick="openTrendModal('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
                             <div class="flex items-center text-blue-600 dark:text-blue-400 space-x-2">
                                 <i data-lucide="footprints" class="w-5 h-5"></i>
                                 <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Steps 👟</span>
                             </div>
                             <div class="mt-4">
-                                <span id="dashboard-steps" class="text-2xl font-bold text-slate-800 dark:text-white">7,600</span>
+                                <span id="dashboard-steps" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
                                 <span id="goal-steps-display" class="text-xs text-blue-600 dark:text-blue-400 font-semibold block">/ 10,000 goal</span>
                             </div>
                         </div>
 
-                        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between">
+                        <div onclick="openTrendModal('calories')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-orange-300 transition">
                             <div class="flex items-center text-orange-500 dark:text-orange-400 space-x-2">
                                 <i data-lucide="flame" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Calories</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Calories 🔥</span>
                             </div>
                             <div class="mt-4">
                                 <span id="dashboard-calories" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
@@ -100,25 +100,25 @@
                             </div>
                         </div>
 
-                        <div onclick="openWaterModal()" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-cyan-300 transition">
+                        <div onclick="openTrendModal('water')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-cyan-300 transition">
                             <div class="flex items-center text-cyan-500 dark:text-cyan-400 space-x-2">
                                 <i data-lucide="droplet" class="w-5 h-5"></i>
                                 <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Water 💧</span>
                             </div>
                             <div class="mt-4">
-                                <span id="dashboard-water" class="text-2xl font-bold text-slate-800 dark:text-white">2.1L</span>
+                                <span id="dashboard-water" class="text-2xl font-bold text-slate-800 dark:text-white">0.0L</span>
                                 <span id="goal-water-display" class="text-xs text-cyan-600 dark:text-cyan-400 font-semibold block">/ 3.0L goal</span>
                             </div>
                         </div>
 
-                        <div onclick="switchTab('sleep')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition">
+                        <div onclick="openTrendModal('sleep')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition">
                             <div class="flex items-center text-indigo-500 dark:text-indigo-400 space-x-2">
                                 <i data-lucide="moon" class="w-5 h-5"></i>
                                 <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sleep 🌙</span>
                             </div>
                             <div class="mt-4">
-                                <span id="dashboard-sleep" class="text-2xl font-bold text-slate-800 dark:text-white">7.5h</span>
-                                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold block">View Details →</span>
+                                <span id="dashboard-sleep" class="text-2xl font-bold text-slate-800 dark:text-white">0.0h</span>
+                                <span id="goal-sleep-display" class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold block">/ 8.0h goal</span>
                             </div>
                         </div>
                     </div>
@@ -262,37 +262,51 @@
                 </div>
             </div>
 
-            <!-- SCREEN 5: STEP COUNTER & ACTIVITY MODULE -->
+            <!-- SCREEN 5: STEP COUNTER & HEALTH SYNC MODULE -->
             <div id="screen-steps" class="screen flex-col space-y-6">
                 <div class="bg-gradient-to-br from-blue-600 to-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Step Counter & Walking 👟</h3>
-                    <p class="text-xs text-slate-200 mt-1">Track daily steps, distance, and active walking burn.</p>
+                    <h3 class="text-base font-bold">Step Counter & Health Sync 👟</h3>
+                    <p class="text-xs text-slate-200 mt-1">Sync your live step count from Apple Health, Samsung Health, or fitness trackers.</p>
                 </div>
 
                 <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
                         <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Step Progress</h4>
-                        <span id="steps-percentage" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-full">76%</span>
+                        <span id="steps-percentage" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-full">0%</span>
                     </div>
 
                     <div class="grid grid-cols-3 gap-2 text-center pt-2">
                         <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Distance</span>
-                            <strong id="steps-distance" class="text-sm font-bold text-slate-800 dark:text-white">5.7 km</strong>
+                            <strong id="steps-distance" class="text-sm font-bold text-slate-800 dark:text-white">0.0 km</strong>
                         </div>
                         <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Active Time</span>
-                            <strong class="text-sm font-bold text-slate-800 dark:text-white">1h 12m</strong>
+                            <strong id="steps-time" class="text-sm font-bold text-slate-800 dark:text-white">0h 00m</strong>
                         </div>
                         <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span>
-                            <strong class="text-sm font-bold text-orange-500">310 kcal</strong>
+                            <strong id="steps-burn" class="text-sm font-bold text-orange-500">0 kcal</strong>
                         </div>
                     </div>
                 </div>
 
+                <!-- Health Tracker Sync Buttons -->
                 <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Walk / Steps</h4>
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Connect Health App / Wearable</h4>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="syncHealthTracker('Apple')" class="flex items-center justify-center space-x-2 bg-black text-white py-3 rounded-xl text-xs font-semibold hover:bg-slate-800 transition shadow-sm">
+                            <span> Apple Health</span>
+                        </button>
+                        <button onclick="syncHealthTracker('Samsung')" class="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 rounded-xl text-xs font-semibold hover:bg-blue-700 transition shadow-sm">
+                            <span>⌚ Samsung Health</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Step Logging -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Manual Steps</h4>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Add Steps</label>
                         <input type="number" id="input-add-steps" placeholder="e.g., 2000" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
@@ -313,37 +327,37 @@
                 <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
                     <div class="flex justify-between items-center">
                         <h4 class="text-sm font-bold text-slate-800 dark:text-white">Last Night's Sleep</h4>
-                        <span id="sleep-badge" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-full">7.5 Hours</span>
+                        <span id="sleep-badge" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-full">0.0 Hours</span>
                     </div>
 
                     <div class="space-y-2 pt-2">
                         <div>
                             <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                                 <span>Deep Sleep (25%)</span>
-                                <span>1h 52m</span>
+                                <span id="deep-sleep-time">0h 00m</span>
                             </div>
                             <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div class="bg-indigo-600 h-2 rounded-full w-1/4"></div>
+                                <div id="deep-sleep-bar" class="bg-indigo-600 h-2 rounded-full w-0"></div>
                             </div>
                         </div>
 
                         <div>
                             <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                                 <span>REM Sleep (20%)</span>
-                                <span>1h 30m</span>
+                                <span id="rem-sleep-time">0h 00m</span>
                             </div>
                             <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div class="bg-blue-500 h-2 rounded-full w-1/5"></div>
+                                <div id="rem-sleep-bar" class="bg-blue-500 h-2 rounded-full w-0"></div>
                             </div>
                         </div>
 
                         <div>
                             <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
                                 <span>Light Sleep (55%)</span>
-                                <span>4h 08m</span>
+                                <span id="light-sleep-time">0h 00m</span>
                             </div>
                             <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div class="bg-cyan-500 h-2 rounded-full w-[55%]"></div>
+                                <div id="light-sleep-bar" class="bg-cyan-500 h-2 rounded-full w-0"></div>
                             </div>
                         </div>
                     </div>
@@ -353,7 +367,7 @@
                     <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Sleep Hours</h4>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Hours Slept</label>
-                        <input type="number" id="input-sleep-hours" step="0.5" value="7.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                        <input type="number" id="input-sleep-hours" step="0.5" value="0.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
                     </div>
                     <button onclick="updateSleepDetailed()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
                         Update Sleep Log
@@ -436,11 +450,11 @@
                     <div class="grid grid-cols-3 gap-2 text-center">
                         <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-2xl block mb-1">🔥</span>
-                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">5-Day Streak</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Starter Badge</span>
                         </div>
                         <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-2xl block mb-1">💧</span>
-                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Hydrated Pro</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Hydration Ready</span>
                         </div>
                         <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
                             <span class="text-2xl block mb-1">🥗</span>
@@ -513,6 +527,20 @@
             </div>
 
         </main>
+
+        <!-- Daily Trend / History Modal -->
+        <div id="trend-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white dark:bg-slate-800 dark:text-white h-[65%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 id="trend-modal-title" class="text-base font-bold text-slate-800 dark:text-white">7-Day Trend</h3>
+                    <button onclick="closeTrendModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <p id="trend-modal-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Daily breakdown trend history.</p>
+                <div id="trend-list-container" class="space-y-2 overflow-y-auto flex-1 pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
 
         <!-- Water Modal -->
         <div id="water-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
@@ -649,7 +677,6 @@
             if (session) {
                 console.log("Logged in as:", session.user.email);
                 
-                // Update user name and avatar from Google metadata if available
                 if (session.user.user_metadata) {
                     const meta = session.user.user_metadata;
                     if (meta.full_name) {
@@ -664,7 +691,6 @@
                     }
                 }
 
-                // Swap login card to "Connected" status with Sign Out button
                 const cloudSyncSection = document.querySelector('#screen-settings .bg-slate-50.dark\\:bg-slate-800.p-5');
                 if (cloudSyncSection) {
                     cloudSyncSection.innerHTML = `
@@ -697,9 +723,10 @@
             if (error) alert('Error signing in with Google: ' + error.message);
         }
 
-        let currentSteps = 7600;
-        let currentWater = 2.1;
-        let currentSleep = 7.5;
+        // START AT ZERO METRICS
+        let currentSteps = 0;
+        let currentWater = 0.0;
+        let currentSleep = 0.0;
         let goalSteps = 10000;
         let goalWater = 3.0;
         let goalSleep = 8.0;
@@ -899,9 +926,107 @@
 
             updateStepDisplay();
             document.getElementById('goal-water-display').innerText = `/ ${goalWater.toFixed(1)}L goal`;
+            document.getElementById('goal-sleep-display').innerText = `/ ${goalSleep.toFixed(1)}h goal`;
             
             alert('Daily goals successfully updated!');
             switchTab('home');
+        }
+
+        // DAILY TREND MODAL LOGIC
+        function openTrendModal(type) {
+            const modal = document.getElementById('trend-modal');
+            const titleEl = document.getElementById('trend-modal-title');
+            const subtitleEl = document.getElementById('trend-modal-subtitle');
+            const container = document.getElementById('trend-list-container');
+
+            let days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            let todayIdx = new Date().getDay() - 1; 
+            if (todayIdx < 0) todayIdx = 6;
+
+            let html = '';
+            let totalVal = 0;
+
+            if (type === 'steps') {
+                titleEl.innerText = "👟 Step Count 7-Day Trend";
+                subtitleEl.innerText = "Daily walking and step volume overview.";
+                let mockSteps = [3200, 7800, 10200, 6400, 9100, 4500, currentSteps];
+                
+                days.forEach((day, idx) => {
+                    let val = mockSteps[idx];
+                    totalVal += val;
+                    let pct = Math.min(100, Math.round((val / goalSteps) * 100));
+                    html += `
+                        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 w-10">${day} ${idx === todayIdx ? '(Today)' : ''}</span>
+                            <div class="flex-1 mx-3 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-800 dark:text-white">${val.toLocaleString()} steps</span>
+                        </div>
+                    `;
+                });
+            } else if (type === 'calories') {
+                titleEl.innerText = "🔥 Calories Burned 7-Day Trend";
+                subtitleEl.innerText = "Active and resting caloric expenditure.";
+                let calsLogged = loggedMeals.reduce((acc, m) => acc + m.calories, 0);
+                let mockCals = [380, 520, 610, 440, 580, 310, calsLogged];
+
+                days.forEach((day, idx) => {
+                    let val = mockCals[idx];
+                    html += `
+                        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 w-10">${day} ${idx === todayIdx ? '(Today)' : ''}</span>
+                            <div class="flex-1 mx-3 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: ${Math.min(100, (val/800)*100)}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-orange-500">${val} kcal</span>
+                        </div>
+                    `;
+                });
+            } else if (type === 'water') {
+                titleEl.innerText = "💧 Water Intake 7-Day Trend";
+                subtitleEl.innerText = "Hydration volume tracking per day.";
+                let mockWater = [2.2, 3.0, 2.8, 3.2, 2.5, 2.1, currentWater];
+
+                days.forEach((day, idx) => {
+                    let val = mockWater[idx];
+                    let pct = Math.min(100, Math.round((val / goalWater) * 100));
+                    html += `
+                        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 w-10">${day} ${idx === todayIdx ? '(Today)' : ''}</span>
+                            <div class="flex-1 mx-3 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                                <div class="bg-cyan-500 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-cyan-600 dark:text-cyan-400">${val.toFixed(1)}L</span>
+                        </div>
+                    `;
+                });
+            } else if (type === 'sleep') {
+                titleEl.innerText = "🌙 Sleep Duration 7-Day Trend";
+                subtitleEl.innerText = "Restfulness and hours slept per night.";
+                let mockSleep = [7.2, 8.0, 6.5, 7.8, 8.2, 7.0, currentSleep];
+
+                days.forEach((day, idx) => {
+                    let val = mockSleep[idx];
+                    let pct = Math.min(100, Math.round((val / goalSleep) * 100));
+                    html += `
+                        <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300 w-10">${day} ${idx === todayIdx ? '(Today)' : ''}</span>
+                            <div class="flex-1 mx-3 bg-slate-200 dark:bg-slate-600 rounded-full h-2">
+                                <div class="bg-indigo-600 h-2 rounded-full" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">${val.toFixed(1)}h</span>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+            modal.classList.remove('hidden');
+        }
+
+        function closeTrendModal() {
+            document.getElementById('trend-modal').classList.add('hidden');
         }
 
         function openSummaryModal() {
@@ -1135,6 +1260,14 @@
             lucide.createIcons();
         }
 
+        // Health Tracker Sync Simulation (Apple / Samsung)
+        function syncHealthTracker(platform) {
+            let syncedSteps = Math.floor(Math.random() * 4000) + 2500;
+            currentSteps += syncedSteps;
+            updateStepDisplay();
+            alert(`Successfully synced with ${platform} Health! Added ${syncedSteps.toLocaleString()} new steps.`);
+        }
+
         function logExtraSteps() {
             const val = parseInt(document.getElementById('input-add-steps').value);
             if (!isNaN(val) && val > 0) {
@@ -1152,6 +1285,8 @@
             const remaining = Math.max(0, goalSteps - currentSteps);
             const percentage = Math.min(100, Math.round((currentSteps / goalSteps) * 100));
             const distanceKm = (currentSteps * 0.00075).toFixed(1);
+            const activeMins = Math.round(currentSteps / 100);
+            const estBurn = Math.round(currentSteps * 0.04);
 
             document.getElementById('dashboard-steps').innerText = currentSteps.toLocaleString();
             document.getElementById('goal-steps-display').innerText = `/ ${goalSteps.toLocaleString()} goal`;
@@ -1159,6 +1294,8 @@
             document.getElementById('steps-progress-bar').style.width = percentage + '%';
             document.getElementById('steps-percentage').innerText = percentage + '%';
             document.getElementById('steps-distance').innerText = distanceKm + ' km';
+            document.getElementById('steps-time').innerText = `${Math.floor(activeMins / 60)}h ${activeMins % 60}m`;
+            document.getElementById('steps-burn').innerText = `${estBurn} kcal`;
         }
 
         function openWaterModal() { document.getElementById('water-modal').classList.remove('hidden'); }
@@ -1173,8 +1310,21 @@
             const val = parseFloat(document.getElementById('input-sleep-hours').value);
             if (!isNaN(val)) {
                 currentSleep = val;
-                document.getElementById('dashboard-sleep').innerText = currentSleep + 'h';
-                document.getElementById('sleep-badge').innerText = currentSleep + ' Hours';
+                document.getElementById('dashboard-sleep').innerText = currentSleep.toFixed(1) + 'h';
+                document.getElementById('sleep-badge').innerText = currentSleep.toFixed(1) + ' Hours';
+                
+                let deep = (currentSleep * 0.25).toFixed(1);
+                let rem = (currentSleep * 0.20).toFixed(1);
+                let light = (currentSleep * 0.55).toFixed(1);
+
+                document.getElementById('deep-sleep-time').innerText = `${Math.floor(deep)}h ${Math.round((deep%1)*60)}m`;
+                document.getElementById('rem-sleep-time').innerText = `${Math.floor(rem)}h ${Math.round((rem%1)*60)}m`;
+                document.getElementById('light-sleep-time').innerText = `${Math.floor(light)}h ${Math.round((light%1)*60)}m`;
+
+                document.getElementById('deep-sleep-bar').style.width = '25%';
+                document.getElementById('rem-sleep-bar').style.width = '20%';
+                document.getElementById('light-sleep-bar').style.width = '55%';
+
                 alert('Sleep log updated successfully!');
                 switchTab('home');
             }
