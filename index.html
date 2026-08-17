@@ -2,7 +2,7 @@
 <html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PulseFit - Health, Meal, Workout & Therapy Tracker</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,6 +19,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        html, body {
+            overscroll-behavior-y: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
         .screen { display: none; }
         .screen.active { display: flex; }
         @keyframes pulse-anim {
@@ -634,7 +644,6 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3VreWtiZ3JzdWludGxzY2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5ODg4ODQsImV4cCI6MjEwMjU2NDg4NH0.5-sVyl6iVQD2rLN98zPtU0jRgww7-GCd3mugErFYTSs';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- PASTE THIS NEW BLOCK HERE ---
         // Listen for Supabase Auth State Changes
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (session) {
@@ -677,7 +686,6 @@
             await supabaseClient.auth.signOut();
             window.location.reload();
         }
-        // --- END OF NEW BLOCK ---
 
         async function signInWithGoogle() {
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
