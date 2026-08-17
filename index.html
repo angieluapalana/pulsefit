@@ -688,18 +688,20 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjb3VreWtiZ3JzdWludGxzY2llIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5ODg4ODQsImV4cCI6MjEwMjU2NDg4NH0.5-sVyl6iVQD2rLN98zPtU0jRgww7-GCd3mugErFYTSs';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Listen for Supabase Auth State Changes
-        supabaseClient.auth.onAuthStateChange((event, session) => {
+        let currentUser = null;
+
+        // Listen for Supabase Auth State Changes & Sync Data
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
             if (session) {
-                console.log("Logged in as:", session.user.email);
+                currentUser = session.user;
+                console.log("Logged in as:", currentUser.email);
                 
-                if (session.user.user_metadata) {
-                    const meta = session.user.user_metadata;
-                    if (meta.full_name) {
+                if (currentUser.user_metadata) {
+                    const meta = currentUser.user_metadata;
+                    if (meta.full_name && userName === "Alex") {
                         userName = meta.full_name;
                         document.getElementById('welcome-name').innerText = userName;
-                        const nameInput = document.getElementById('input-profile-name');
-                        if (nameInput) nameInput.value = userName;
+                        document.getElementById('input-profile-name').value = userName;
                     }
                     if (meta.avatar_url || meta.picture) {
                         userAvatar = meta.avatar_url || meta.picture;
@@ -707,6 +709,10 @@
                     }
                 }
 
+                // Fetch latest saved profile & settings from Supabase
+                await fetchUserDataFromCloud();
+
+                // Swap login card to "Connected" status
                 const cloudSyncSection = document.querySelector('#screen-settings .bg-slate-50.dark\\:bg-slate-800.p-5');
                 if (cloudSyncSection) {
                     cloudSyncSection.innerHTML = `
@@ -714,7 +720,7 @@
                             <i data-lucide="check-circle" class="w-6 h-6"></i>
                         </div>
                         <h4 class="text-sm font-bold text-slate-800 dark:text-white">Connected to Supabase</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Signed in as ${session.user.email}</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Signed in as ${currentUser.email}</p>
                         <button onclick="signOut()" class="w-full mt-3 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900 py-2 rounded-xl text-xs font-semibold hover:bg-red-100 transition">
                             Sign Out
                         </button>
@@ -723,6 +729,43 @@
                 }
             }
         });
+
+        async function fetchUserDataFromCloud() {
+            if (!currentUser) return;
+            const { data, error } = await supabaseClient
+                .from('user_profiles')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (data) {
+                if (data.display_name) {
+                    userName = data.display_name;
+                    document.getElementById('welcome-name').innerText = userName;
+                    document.getElementById('input-profile-name').value = userName;
+                }
+                if (data.current_weight) {
+                    currentWeight = data.current_weight;
+                    document.getElementById('input-current-weight').value = currentWeight;
+                }
+                if (data.target_weight) {
+                    targetWeight = data.target_weight;
+                    document.getElementById('input-target-weight').value = targetWeight;
+                }
+                if (data.therapy_enabled !== undefined) {
+                    document.getElementById('toggle-therapy').checked = data.therapy_enabled;
+                    toggleTherapyNav({ checked: data.therapy_enabled });
+                }
+                updateWeightDisplay();
+            }
+        }
+
+        async function syncDataToCloud(updatedFields) {
+            if (!currentUser) return;
+            await supabaseClient
+                .from('user_profiles')
+                .upsert({ user_id: currentUser.id, ...updatedFields, updated_at: new Date() });
+        }
 
         async function signOut() {
             await supabaseClient.auth.signOut();
@@ -887,6 +930,7 @@
                     switchTab('home');
                 }
             }
+            syncDataToCloud({ therapy_enabled: checkbox.checked });
         }
 
         function handleImageUpload(event) {
@@ -910,7 +954,8 @@
                 userAvatar = uploadedAvatarData;
                 document.getElementById('header-avatar').src = userAvatar;
             }
-            alert('Profile updated successfully!');
+            syncDataToCloud({ display_name: userName, avatar_url: userAvatar });
+            alert('Profile updated and synced to cloud successfully!');
             switchTab('home');
         }
 
@@ -949,7 +994,8 @@
             if (!isNaN(target)) targetWeight = target;
 
             updateWeightDisplay();
-            alert('Weight goals and targets successfully updated!');
+            syncDataToCloud({ current_weight: currentWeight, target_weight: targetWeight });
+            alert('Weight goals successfully updated and synced!');
             switchTab('home');
         }
 
