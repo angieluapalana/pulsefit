@@ -61,20 +61,20 @@
             
             <!-- SCREEN 1: HOME DASHBOARD -->
             <div id="screen-home" class="screen active flex-col space-y-6">
-                <!-- Welcome Banner with Streak Badge -->
+                <!-- Welcome Banner with Weight Progress -->
                 <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
                     <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
-                        <span>🔥</span>
-                        <span id="streak-counter">0 Day Streak</span>
+                        <span>⚖️</span>
+                        <span id="weight-status-badge">Goal: 65 kg</span>
                     </div>
                     <p class="text-emerald-100 text-sm font-medium">Welcome back, <span id="welcome-name">Alex</span>!</p>
-                    <h3 class="text-lg font-bold mt-1 leading-snug">You are <span id="steps-remaining">10,000</span> steps away from your daily goal.</h3>
+                    <h3 class="text-lg font-bold mt-1 leading-snug" id="weight-banner-text">You are <span id="weight-remaining">3.5 kg</span> away from your target weight.</h3>
                     <div class="mt-4 w-full bg-emerald-900/30 rounded-full h-2">
-                        <div id="steps-progress-bar" class="bg-white h-2 rounded-full w-0"></div>
+                        <div id="weight-progress-bar" class="bg-white h-2 rounded-full w-1/2"></div>
                     </div>
                 </div>
 
-                <!-- Daily Trackers Grid (Clickable for Trends) -->
+                <!-- Daily Trackers Grid (Adaptive & Clickable) -->
                 <div>
                     <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Trends)</h3>
                     <div class="grid grid-cols-2 gap-3">
@@ -367,7 +367,7 @@
                     <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Sleep Hours</h4>
                     <div>
                         <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Hours Slept</label>
-                        <input type="number" id="input-sleep-hours" step="0.5" value="0.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                        <input type="number" id="input-sleep-hours" step="0.5" value="7.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
                     </div>
                     <button onclick="updateSleepDetailed()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
                         Update Sleep Log
@@ -417,7 +417,7 @@
             <div id="screen-settings" class="screen flex-col space-y-6">
                 <div class="bg-slate-900 p-5 rounded-2xl text-white">
                     <h3 class="text-base font-bold">Profile & Settings</h3>
-                    <p class="text-xs text-slate-400 mt-1">Personalize your profile, appearance theme, and feature modules.</p>
+                    <p class="text-xs text-slate-400 mt-1">Personalize your profile, appearance theme, and weight targets.</p>
                 </div>
 
                 <!-- Feature Toggles -->
@@ -433,6 +433,22 @@
                             <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
                         </label>
                     </div>
+                </div>
+
+                <!-- Weight Targets Form -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Weight Targets & Logging ⚖️</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Current Weight (kg)</label>
+                        <input type="number" step="0.1" id="input-current-weight" value="68.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Weight (kg)</label>
+                        <input type="number" step="0.1" id="input-target-weight" value="65.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="saveWeightGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                        Update Weight Goals
+                    </button>
                 </div>
 
                 <!-- Daily Summary & Export Card -->
@@ -723,10 +739,13 @@
             if (error) alert('Error signing in with Google: ' + error.message);
         }
 
-        // START AT ZERO METRICS
+        // METRICS STATE
         let currentSteps = 0;
         let currentWater = 0.0;
         let currentSleep = 0.0;
+        let currentWeight = 68.5;
+        let targetWeight = 65.0;
+
         let goalSteps = 10000;
         let goalWater = 3.0;
         let goalSleep = 8.0;
@@ -819,6 +838,9 @@
 
         applyTheme(currentTheme);
         updateStepDisplay();
+        updateWaterDisplay();
+        updateSleepDisplay();
+        updateWeightDisplay();
 
         const todayStr = new Date().toISOString().split('T')[0];
         document.getElementById('inj-date').value = todayStr;
@@ -919,16 +941,47 @@
             }
         }
 
+        function saveWeightGoals() {
+            const curr = parseFloat(document.getElementById('input-current-weight').value);
+            const target = parseFloat(document.getElementById('input-target-weight').value);
+
+            if (!isNaN(curr)) currentWeight = curr;
+            if (!isNaN(target)) targetWeight = target;
+
+            updateWeightDisplay();
+            alert('Weight goals and targets successfully updated!');
+            switchTab('home');
+        }
+
+        function updateWeightDisplay() {
+            const diff = Math.abs(currentWeight - targetWeight).toFixed(1);
+            const badge = document.getElementById('weight-status-badge');
+            const bannerText = document.getElementById('weight-banner-text');
+            const progressBar = document.getElementById('weight-progress-bar');
+
+            badge.innerText = `Goal: ${targetWeight} kg`;
+            if (currentWeight > targetWeight) {
+                bannerText.innerHTML = `You are <span id="weight-remaining">${diff} kg</span> away from your target weight.`;
+            } else if (currentWeight < targetWeight) {
+                bannerText.innerHTML = `You are <span id="weight-remaining">${diff} kg</span> away from your goal gain.`;
+            } else {
+                bannerText.innerHTML = `Congratulations! You hit your target weight of <span id="weight-remaining">${targetWeight} kg</span>!`;
+            }
+            progressBar.style.width = '65%';
+        }
+
         function saveGoals() {
             goalSteps = parseInt(document.getElementById('input-goal-steps').value) || 10000;
             goalWater = parseFloat(document.getElementById('input-goal-water').value) || 3.0;
             goalSleep = parseFloat(document.getElementById('input-goal-sleep').value) || 8.0;
 
             updateStepDisplay();
+            updateWaterDisplay();
+            updateSleepDisplay();
             document.getElementById('goal-water-display').innerText = `/ ${goalWater.toFixed(1)}L goal`;
             document.getElementById('goal-sleep-display').innerText = `/ ${goalSleep.toFixed(1)}h goal`;
             
-            alert('Daily goals successfully updated!');
+            alert('Daily targets successfully updated!');
             switchTab('home');
         }
 
@@ -944,7 +997,6 @@
             if (todayIdx < 0) todayIdx = 6;
 
             let html = '';
-            let totalVal = 0;
 
             if (type === 'steps') {
                 titleEl.innerText = "👟 Step Count 7-Day Trend";
@@ -953,7 +1005,6 @@
                 
                 days.forEach((day, idx) => {
                     let val = mockSteps[idx];
-                    totalVal += val;
                     let pct = Math.min(100, Math.round((val / goalSteps) * 100));
                     html += `
                         <div class="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl flex items-center justify-between border border-slate-100 dark:border-slate-600">
@@ -1053,9 +1104,9 @@
                 <p><strong>Report Period:</strong> ${start} to ${end}</p>
                 <p><strong>User:</strong> ${userName}</p>
                 <hr class="border-slate-200 dark:border-slate-600 my-1">
-                <p><strong>Total Steps Logged:</strong> ${currentSteps.toLocaleString()} steps</p>
-                <p><strong>Water Average:</strong> ${currentWater.toFixed(1)}L / day</p>
-                <p><strong>Sleep Average:</strong> ${currentSleep}h / night</p>
+                <p><strong>Current Weight:</strong> ${currentWeight} kg (Target: ${targetWeight} kg)</p>
+                <p><strong>Water Logged:</strong> ${currentWater.toFixed(1)}L</p>
+                <p><strong>Sleep Logged:</strong> ${currentSleep}h</p>
                 <p><strong>Nutrition Intake:</strong> ${totalCals} kcal | P: ${totalProtein}g | F: ${totalFiber}g</p>
                 <p><strong>Workouts Logged:</strong><br>${workoutSummary}</p>
                 <p><strong>Injections / Therapy Logged:</strong><br>${injSummary}</p>
@@ -1266,6 +1317,7 @@
             currentSteps += syncedSteps;
             updateStepDisplay();
             alert(`Successfully synced with ${platform} Health! Added ${syncedSteps.toLocaleString()} new steps.`);
+            switchTab('home');
         }
 
         function logExtraSteps() {
@@ -1282,17 +1334,11 @@
         }
 
         function updateStepDisplay() {
-            const remaining = Math.max(0, goalSteps - currentSteps);
-            const percentage = Math.min(100, Math.round((currentSteps / goalSteps) * 100));
             const distanceKm = (currentSteps * 0.00075).toFixed(1);
             const activeMins = Math.round(currentSteps / 100);
             const estBurn = Math.round(currentSteps * 0.04);
 
             document.getElementById('dashboard-steps').innerText = currentSteps.toLocaleString();
-            document.getElementById('goal-steps-display').innerText = `/ ${goalSteps.toLocaleString()} goal`;
-            document.getElementById('steps-remaining').innerText = remaining.toLocaleString();
-            document.getElementById('steps-progress-bar').style.width = percentage + '%';
-            document.getElementById('steps-percentage').innerText = percentage + '%';
             document.getElementById('steps-distance').innerText = distanceKm + ' km';
             document.getElementById('steps-time').innerText = `${Math.floor(activeMins / 60)}h ${activeMins % 60}m`;
             document.getElementById('steps-burn').innerText = `${estBurn} kcal`;
@@ -1302,32 +1348,40 @@
         function closeWaterModal() { document.getElementById('water-modal').classList.add('hidden'); }
         function addWater(ml) {
             currentWater += (ml / 1000);
-            document.getElementById('dashboard-water').innerText = currentWater.toFixed(1) + 'L';
+            updateWaterDisplay();
             closeWaterModal();
+            alert(`Successfully logged +${ml} ml of water!`);
+        }
+
+        function updateWaterDisplay() {
+            document.getElementById('dashboard-water').innerText = currentWater.toFixed(1) + 'L';
         }
 
         function updateSleepDetailed() {
             const val = parseFloat(document.getElementById('input-sleep-hours').value);
             if (!isNaN(val)) {
                 currentSleep = val;
-                document.getElementById('dashboard-sleep').innerText = currentSleep.toFixed(1) + 'h';
-                document.getElementById('sleep-badge').innerText = currentSleep.toFixed(1) + ' Hours';
-                
-                let deep = (currentSleep * 0.25).toFixed(1);
-                let rem = (currentSleep * 0.20).toFixed(1);
-                let light = (currentSleep * 0.55).toFixed(1);
-
-                document.getElementById('deep-sleep-time').innerText = `${Math.floor(deep)}h ${Math.round((deep%1)*60)}m`;
-                document.getElementById('rem-sleep-time').innerText = `${Math.floor(rem)}h ${Math.round((rem%1)*60)}m`;
-                document.getElementById('light-sleep-time').innerText = `${Math.floor(light)}h ${Math.round((light%1)*60)}m`;
-
-                document.getElementById('deep-sleep-bar').style.width = '25%';
-                document.getElementById('rem-sleep-bar').style.width = '20%';
-                document.getElementById('light-sleep-bar').style.width = '55%';
-
+                updateSleepDisplay();
                 alert('Sleep log updated successfully!');
                 switchTab('home');
             }
+        }
+
+        function updateSleepDisplay() {
+            document.getElementById('dashboard-sleep').innerText = currentSleep.toFixed(1) + 'h';
+            document.getElementById('sleep-badge').innerText = currentSleep.toFixed(1) + ' Hours';
+            
+            let deep = (currentSleep * 0.25).toFixed(1);
+            let rem = (currentSleep * 0.20).toFixed(1);
+            let light = (currentSleep * 0.55).toFixed(1);
+
+            document.getElementById('deep-sleep-time').innerText = `${Math.floor(deep)}h ${Math.round((deep%1)*60)}m`;
+            document.getElementById('rem-sleep-time').innerText = `${Math.floor(rem)}h ${Math.round((rem%1)*60)}m`;
+            document.getElementById('light-sleep-time').innerText = `${Math.floor(light)}h ${Math.round((light%1)*60)}m`;
+
+            document.getElementById('deep-sleep-bar').style.width = currentSleep > 0 ? '25%' : '0%';
+            document.getElementById('rem-sleep-bar').style.width = currentSleep > 0 ? '20%' : '0%';
+            document.getElementById('light-sleep-bar').style.width = currentSleep > 0 ? '55%' : '0%';
         }
 
         function filterWorkouts(category) {
