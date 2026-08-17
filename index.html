@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PulseFit - Health & Smart Meal Planner</title>
+    <title>PulseFit - Health, Meal, Workout & Therapy Tracker</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <!-- Google Fonts Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
@@ -14,21 +19,28 @@
         body { font-family: 'Inter', sans-serif; }
         .screen { display: none; }
         .screen.active { display: flex; }
+        @keyframes pulse-anim {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.06); opacity: 1; }
+        }
+        .animate-pulse-custom {
+            animation: pulse-anim 1.5s infinite ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-slate-900 flex justify-center items-center min-h-screen m-0 p-0 overflow-hidden">
 
     <!-- Strict Mobile Viewport Container -->
-    <div class="w-full sm:max-w-[390px] h-screen sm:h-[844px] bg-white sm:rounded-[40px] sm:border-8 sm:border-slate-800 shadow-2xl flex flex-col overflow-hidden relative">
+    <div class="w-full sm:max-w-[390px] h-screen sm:h-[844px] bg-white dark:bg-slate-900 sm:rounded-[40px] sm:border-8 sm:border-slate-800 shadow-2xl flex flex-col overflow-hidden relative transition-colors duration-200">
         
         <!-- App Header (Sticky) -->
-        <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white sticky top-0 z-20 border-b border-slate-100 shrink-0">
+        <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800 shrink-0 transition-colors duration-200">
             <div>
-                <h1 class="text-xs font-semibold uppercase tracking-wider text-emerald-600">PulseFit</h1>
-                <h2 id="header-title" class="text-xl font-bold text-slate-800">Today's Overview</h2>
+                <h1 class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">PulseFit</h1>
+                <h2 id="header-title" class="text-xl font-bold text-slate-800 dark:text-white">Today's Overview</h2>
             </div>
-            <button class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200 transition">
-                <i data-lucide="user" class="w-5 h-5"></i>
+            <button onclick="switchTab('settings')" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition overflow-hidden border border-slate-200 dark:border-slate-700">
+                <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-full h-full object-cover">
             </button>
         </header>
 
@@ -37,86 +49,93 @@
             
             <!-- SCREEN 1: HOME DASHBOARD -->
             <div id="screen-home" class="screen active flex-col space-y-6">
-                <!-- Welcome Banner -->
-                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20">
-                    <p class="text-emerald-100 text-sm font-medium">Welcome back, Alex!</p>
-                    <h3 class="text-lg font-bold mt-1 leading-snug">You are 2,400 steps away from your daily goal.</h3>
+                <!-- Welcome Banner with Streak Badge -->
+                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
+                        <span>🔥</span>
+                        <span id="streak-counter">5 Day Streak</span>
+                    </div>
+                    <p class="text-emerald-100 text-sm font-medium">Welcome back, <span id="welcome-name">Alex</span>!</p>
+                    <h3 class="text-lg font-bold mt-1 leading-snug">You are <span id="steps-remaining">2,400</span> steps away from your daily goal.</h3>
                     <div class="mt-4 w-full bg-emerald-900/30 rounded-full h-2">
-                        <div class="bg-white h-2 rounded-full w-3/4"></div>
+                        <div id="steps-progress-bar" class="bg-white h-2 rounded-full w-3/4"></div>
                     </div>
                 </div>
 
-                <!-- Daily Trackers Grid -->
+                <!-- Daily Trackers Grid (Interactive) -->
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 mb-3">Daily Trackers</h3>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap to Update)</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex flex-col justify-between">
-                            <div class="flex items-center text-blue-600 space-x-2">
+                        <div onclick="switchTab('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
+                            <div class="flex items-center text-blue-600 dark:text-blue-400 space-x-2">
                                 <i data-lucide="footprints" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500">Steps</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Steps 👟</span>
                             </div>
                             <div class="mt-4">
-                                <span class="text-2xl font-bold text-slate-800">7,600</span>
-                                <span class="text-xs text-slate-400 block">/ 10,000</span>
+                                <span id="dashboard-steps" class="text-2xl font-bold text-slate-800 dark:text-white">7,600</span>
+                                <span id="goal-steps-display" class="text-xs text-blue-600 dark:text-blue-400 font-semibold block">/ 10,000 goal</span>
                             </div>
                         </div>
-                        <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex flex-col justify-between">
-                            <div class="flex items-center text-orange-500 space-x-2">
+
+                        <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between">
+                            <div class="flex items-center text-orange-500 dark:text-orange-400 space-x-2">
                                 <i data-lucide="flame" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500">Calories</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Calories</span>
                             </div>
                             <div class="mt-4">
-                                <span id="dashboard-calories" class="text-2xl font-bold text-slate-800">0</span>
-                                <span class="text-xs text-slate-400 block">kcal logged</span>
+                                <span id="dashboard-calories" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
+                                <span class="text-xs text-slate-400 dark:text-slate-500 block">kcal logged</span>
                             </div>
                         </div>
-                        <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex flex-col justify-between">
-                            <div class="flex items-center text-cyan-500 space-x-2">
+
+                        <div onclick="openWaterModal()" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-cyan-300 transition">
+                            <div class="flex items-center text-cyan-500 dark:text-cyan-400 space-x-2">
                                 <i data-lucide="droplet" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500">Water</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Water 💧</span>
                             </div>
                             <div class="mt-4">
-                                <span class="text-2xl font-bold text-slate-800">2.1L</span>
-                                <span class="text-xs text-slate-400 block">/ 3.0L goal</span>
+                                <span id="dashboard-water" class="text-2xl font-bold text-slate-800 dark:text-white">2.1L</span>
+                                <span id="goal-water-display" class="text-xs text-cyan-600 dark:text-cyan-400 font-semibold block">/ 3.0L goal</span>
                             </div>
                         </div>
-                        <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl flex flex-col justify-between">
-                            <div class="flex items-center text-indigo-500 space-x-2">
+
+                        <div onclick="switchTab('sleep')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition">
+                            <div class="flex items-center text-indigo-500 dark:text-indigo-400 space-x-2">
                                 <i data-lucide="moon" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500">Sleep</span>
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sleep 🌙</span>
                             </div>
                             <div class="mt-4">
-                                <span class="text-2xl font-bold text-slate-800">7.5h</span>
-                                <span class="text-xs text-slate-400 block">Last night</span>
+                                <span id="dashboard-sleep" class="text-2xl font-bold text-slate-800 dark:text-white">7.5h</span>
+                                <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold block">View Details →</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Macro Summary Bar -->
-                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">Today's Nutrition Breakdown</h3>
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl">
+                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Today's Nutrition Breakdown</h3>
                     <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="bg-white p-3 rounded-xl border border-slate-100">
-                            <span class="text-xs text-slate-400 block">Total Protein</span>
-                            <span id="dashboard-protein" class="text-lg font-bold text-emerald-600">0g</span>
+                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Protein</span>
+                            <span id="dashboard-protein" class="text-lg font-bold text-emerald-600 dark:text-emerald-400">0g</span>
                         </div>
-                        <div class="bg-white p-3 rounded-xl border border-slate-100">
-                            <span class="text-xs text-slate-400 block">Total Fiber</span>
-                            <span id="dashboard-fiber" class="text-lg font-bold text-blue-600">0g</span>
+                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Fiber</span>
+                            <span id="dashboard-fiber" class="text-lg font-bold text-blue-600 dark:text-blue-400">0g</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Quick Actions -->
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 mb-3">Quick Actions</h3>
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Quick Actions</h3>
                     <div class="grid grid-cols-2 gap-3">
-                        <button onclick="switchTab('meals')" class="flex items-center justify-center space-x-2 bg-emerald-50 text-emerald-700 font-semibold py-3.5 px-4 rounded-xl border border-emerald-100 hover:bg-emerald-100 transition">
+                        <button onclick="switchTab('meals')" class="flex items-center justify-center space-x-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold py-3.5 px-4 rounded-xl border border-emerald-100 dark:border-emerald-800 hover:bg-emerald-100 transition">
                             <i data-lucide="utensils" class="w-4 h-4"></i>
                             <span class="text-sm">Log Meal</span>
                         </button>
-                        <button onclick="alert('Starting Workout Routine...')" class="flex items-center justify-center space-x-2 bg-slate-900 text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-800 transition shadow-sm">
+                        <button onclick="switchTab('workouts')" class="flex items-center justify-center space-x-2 bg-slate-900 dark:bg-slate-700 text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm">
                             <i data-lucide="dumbbell" class="w-4 h-4"></i>
                             <span class="text-sm">Workout</span>
                         </button>
@@ -124,20 +143,49 @@
                 </div>
             </div>
 
-            <!-- SCREEN 2: SMART MEAL PLAN CREATOR -->
+            <!-- SCREEN 2: SMART MEAL PLAN CREATOR & COMMUNITY RECIPES -->
             <div id="screen-meals" class="screen flex-col space-y-6">
-                <!-- Banner -->
                 <div class="bg-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Adaptive Ingredient Matcher</h3>
-                    <p class="text-xs text-slate-400 mt-1">Click anywhere on any recipe card to view full instructions!</p>
+                    <h3 class="text-base font-bold">Community Meal Planner</h3>
+                    <p class="text-xs text-slate-400 mt-1">Search official PulseFit recipes or publish your own cooked meals!</p>
                 </div>
 
-                <!-- Input Ingredients Form -->
-                <div class="bg-slate-50 border border-slate-100 p-4 rounded-2xl space-y-4">
-                    <h4 class="text-sm font-bold text-slate-800">What's in your kitchen?</h4>
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Share Your Cooked Recipe</h4>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Meal Slot</label>
-                        <select id="meal-type" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Recipe / Meal Name</label>
+                        <input type="text" id="custom-meal-name" placeholder="e.g., Mom's Garlic Beef & Rice" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (grams)</label>
+                            <input type="number" id="custom-meal-weight" placeholder="e.g., 350" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Calories (kcal)</label>
+                            <input type="number" id="custom-meal-cals" placeholder="e.g., 520" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Protein (g)</label>
+                            <input type="number" id="custom-meal-protein" placeholder="e.g., 38" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fiber (g)</label>
+                            <input type="number" id="custom-meal-fiber" placeholder="e.g., 5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+                    <button onclick="publishCustomRecipe()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                        Publish to Community Database
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Search Recipes</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Meal Slot</label>
+                        <select id="meal-type" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
                             <option value="Breakfast">Breakfast</option>
                             <option value="Lunch">Lunch</option>
                             <option value="Dinner">Dinner</option>
@@ -145,26 +193,24 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Enter Ingredients (comma-separated)</label>
-                        <input type="text" id="ingredient-input" placeholder="e.g., chicken, broccoli, rice" oninput="findSuggestions()" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Search Keywords (Ingredients / Name)</label>
+                        <input type="text" id="ingredient-input" placeholder="e.g., chicken, beef, egg" oninput="findSuggestions()" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
                     </div>
                 </div>
 
-                <!-- Recipe Suggestions Box -->
                 <div>
-                    <h4 class="text-sm font-bold text-slate-800 mb-2">Adaptive Suggestions (Click card for recipe)</h4>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Matching Recipes</h4>
                     <div id="suggestions-list" class="space-y-2">
-                        <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                            Start typing ingredients above to see adaptive recipe recommendations!
+                        <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                            Start typing above to search recipes!
                         </div>
                     </div>
                 </div>
 
-                <!-- Planned Meals Log -->
                 <div>
                     <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-sm font-bold text-slate-800">Today's Logged Meals</h4>
-                        <span id="total-calories" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Total: 0 kcal</span>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Logged Meals</h4>
+                        <span id="total-calories" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">Total: 0 kcal</span>
                     </div>
                     <div id="meal-list" class="space-y-2">
                         <div id="empty-state" class="text-center py-6 text-slate-400 text-xs">
@@ -174,67 +220,406 @@
                 </div>
             </div>
 
-            <!-- SCREEN 3: PLACEHOLDER TRACKER -->
-            <div id="screen-tracker" class="screen flex-col items-center justify-center py-20 text-center">
-                <i data-lucide="activity" class="w-12 h-12 text-emerald-500 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-800">Activity & Fitness Module</h3>
-                <p class="text-xs text-slate-500 mt-1">Step counters and sleep metrics module.</p>
+            <!-- SCREEN 3: WORKOUT ROUTINES -->
+            <div id="screen-workouts" class="screen flex-col space-y-6">
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl text-white">
+                    <h3 class="text-base font-bold">Pro-Builder Workout Routines</h3>
+                    <p class="text-xs text-slate-300 mt-1">Tap any routine to view animated simulation previews and form tips.</p>
+                </div>
+
+                <div class="flex space-x-2 overflow-x-auto pb-1">
+                    <button onclick="filterWorkouts('All')" class="category-btn bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition">All</button>
+                    <button onclick="filterWorkouts('HIIT')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">HIIT</button>
+                    <button onclick="filterWorkouts('Strength')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Strength</button>
+                    <button onclick="filterWorkouts('Core')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Core</button>
+                    <button onclick="filterWorkouts('Recovery')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Recovery</button>
+                </div>
+
+                <div id="workout-list" class="space-y-3"></div>
+
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Completed Workouts Today</h4>
+                        <span id="workout-count" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">0 Completed</span>
+                    </div>
+                    <div id="completed-workout-list" class="space-y-2">
+                        <div id="empty-workout-state" class="text-center py-6 text-slate-400 text-xs">
+                            No workouts completed yet today. Let's crush one!
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- SCREEN 4: PLACEHOLDER SETTINGS -->
-            <div id="screen-settings" class="screen flex-col items-center justify-center py-20 text-center">
-                <i data-lucide="settings" class="w-12 h-12 text-slate-400 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-800">Settings & Cloud Sync</h3>
-                <p class="text-xs text-slate-500 mt-1">Google & Apple account login configuration.</p>
+            <!-- SCREEN 5: STEP COUNTER & ACTIVITY MODULE -->
+            <div id="screen-steps" class="screen flex-col space-y-6">
+                <div class="bg-gradient-to-br from-blue-600 to-slate-900 p-5 rounded-2xl text-white">
+                    <h3 class="text-base font-bold">Step Counter & Walking 👟</h3>
+                    <p class="text-xs text-slate-200 mt-1">Track daily steps, distance, and active walking burn.</p>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Step Progress</h4>
+                        <span id="steps-percentage" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-full">76%</span>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 text-center pt-2">
+                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Distance</span>
+                            <strong id="steps-distance" class="text-sm font-bold text-slate-800 dark:text-white">5.7 km</strong>
+                        </div>
+                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Active Time</span>
+                            <strong class="text-sm font-bold text-slate-800 dark:text-white">1h 12m</strong>
+                        </div>
+                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span>
+                            <strong class="text-sm font-bold text-orange-500">310 kcal</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Walk / Steps</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Add Steps</label>
+                        <input type="number" id="input-add-steps" placeholder="e.g., 2000" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <button onclick="logExtraSteps()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm text-xs">
+                        Add to Daily Steps
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 6: SLEEP RECOVERY MODULE -->
+            <div id="screen-sleep" class="screen flex-col space-y-6">
+                <div class="bg-gradient-to-br from-indigo-600 to-slate-900 p-5 rounded-2xl text-white">
+                    <h3 class="text-base font-bold">Sleep & Recovery Insights 🌙</h3>
+                    <p class="text-xs text-slate-200 mt-1">Monitor restfulness and sleep quality breakdowns for deep recovery.</p>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Last Night's Sleep</h4>
+                        <span id="sleep-badge" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-full">7.5 Hours</span>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                <span>Deep Sleep (25%)</span>
+                                <span>1h 52m</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                <div class="bg-indigo-600 h-2 rounded-full w-1/4"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                <span>REM Sleep (20%)</span>
+                                <span>1h 30m</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                <div class="bg-blue-500 h-2 rounded-full w-1/5"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                <span>Light Sleep (55%)</span>
+                                <span>4h 08m</span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                <div class="bg-cyan-500 h-2 rounded-full w-[55%]"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log Sleep Hours</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Total Hours Slept</label>
+                        <input type="number" id="input-sleep-hours" step="0.5" value="7.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <button onclick="updateSleepDetailed()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                        Update Sleep Log
+                    </button>
+                </div>
+            </div>
+
+            <!-- SCREEN 7: PEPTIDE / INSULIN THERAPY TRACKER -->
+            <div id="screen-therapy" class="screen flex-col space-y-6">
+                <div class="bg-gradient-to-br from-purple-600 to-slate-900 p-5 rounded-2xl text-white">
+                    <h3 class="text-base font-bold">Peptide & Injection Tracker 💉</h3>
+                    <p class="text-xs text-slate-200 mt-1">Log injection schedules, units, and corresponding body weight.</p>
+                </div>
+
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log New Injection</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
+                        <input type="date" id="inj-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Units (IU / mg)</label>
+                            <input type="number" step="0.1" id="inj-units" placeholder="e.g., 2.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (kg / lbs)</label>
+                            <input type="text" id="inj-weight" placeholder="e.g., 78 kg" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+                    <button onclick="logInjection()" class="w-full bg-purple-600 text-white font-semibold py-2.5 rounded-xl hover:bg-purple-700 transition shadow-sm text-xs">
+                        Save Injection Log
+                    </button>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Injection History</h4>
+                    <div id="injection-list" class="space-y-2">
+                        <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                            No injections logged yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SCREEN 4: SETTINGS & PERSONALIZATION -->
+            <div id="screen-settings" class="screen flex-col space-y-6">
+                <div class="bg-slate-900 p-5 rounded-2xl text-white">
+                    <h3 class="text-base font-bold">Profile & Settings</h3>
+                    <p class="text-xs text-slate-400 mt-1">Personalize your profile, appearance theme, and feature modules.</p>
+                </div>
+
+                <!-- Feature Toggles -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Feature Modules</h4>
+                    <div class="flex justify-between items-center py-1">
+                        <div>
+                            <h5 class="text-xs font-semibold text-slate-800 dark:text-white">Peptide & Injection Tracker</h5>
+                            <p class="text-[10px] text-slate-400">Show injection logging on bottom bar</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-therapy" onchange="toggleTherapyNav(this)" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Daily Summary & Export Card -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Health Summary Report 📊</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Generate a comprehensive summary report across custom date ranges.</p>
+                    <button onclick="openSummaryModal()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                        View Date-Range Summary Report
+                    </button>
+                </div>
+
+                <!-- Achievement Badges Card -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Unlocked Badges 🏆</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-2xl block mb-1">🔥</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">5-Day Streak</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-2xl block mb-1">💧</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Hydrated Pro</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                            <span class="text-2xl block mb-1">🥗</span>
+                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Chef Creator</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Customization Form -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Profile Information</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Display Name</label>
+                        <input type="text" id="input-profile-name" value="Alex" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Profile Photo Upload</label>
+                        <input type="file" id="input-profile-file" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950 dark:file:text-emerald-300 hover:file:bg-emerald-100 cursor-pointer">
+                    </div>
+                    <button onclick="saveProfile()" class="w-full bg-slate-900 dark:bg-slate-700 text-white font-semibold py-2.5 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm text-xs">
+                        Update Profile
+                    </button>
+                </div>
+
+                <!-- Theme Toggle -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Appearance Theme</h4>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setTheme('light')" id="theme-btn-light" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Light</button>
+                        <button onclick="setTheme('dark')" id="theme-btn-dark" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Dark</button>
+                        <button onclick="setTheme('system')" id="theme-btn-system" class="bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">System</button>
+                    </div>
+                </div>
+
+                <!-- Goals Form -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Set Daily Targets</h4>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Step Goal</label>
+                        <input type="number" id="input-goal-steps" value="10000" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Water Goal (Liters)</label>
+                        <input type="number" id="input-goal-water" step="0.5" value="3.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Sleep Goal (Hours)</label>
+                        <input type="number" id="input-goal-sleep" step="0.5" value="8.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <button onclick="saveGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                        Save Goals
+                    </button>
+                </div>
+
+                <!-- Cloud Sync Options -->
+                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-4 text-center">
+                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-1">
+                        <i data-lucide="cloud" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-sm font-bold text-slate-800 dark:text-white">Supabase Cloud Sync</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Backup your daily logs across devices securely.</p>
+                    
+                    <div class="space-y-2 pt-1">
+                        <button onclick="alert('Connected to Supabase via Google OAuth!')" class="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition shadow-sm">
+                            <i data-lucide="chrome" class="w-4 h-4 text-blue-500"></i>
+                            <span>Sign in with Google</span>
+                        </button>
+                        <button onclick="alert('Connected to Supabase via Apple ID!')" class="w-full flex items-center justify-center space-x-2 bg-black py-2.5 rounded-xl text-xs font-semibold text-white hover:bg-slate-800 transition shadow-sm">
+                            <i data-lucide="apple" class="w-4 h-4 text-white"></i>
+                            <span>Sign in with Apple</span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </main>
 
-        <!-- Recipe Details Modal -->
-        <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white h-[75%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative animate-in fade-in slide-in-from-bottom duration-200">
-                <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+        <!-- Water Modal -->
+        <div id="water-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white dark:bg-slate-800 dark:text-white w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Log Water Intake 💧</h3>
+                    <button onclick="closeWaterModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Add a glass (+250ml) or set your daily total.</p>
+                <div class="flex space-x-3">
+                    <button onclick="addWater(250)" class="flex-1 bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-100 dark:border-cyan-800 py-3 rounded-xl font-semibold text-xs hover:bg-cyan-100 transition">+ 250 ml</button>
+                    <button onclick="addWater(500)" class="flex-1 bg-cyan-600 text-white py-3 rounded-xl font-semibold text-xs hover:bg-cyan-700 transition shadow-sm">+ 500 ml</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date-Range Summary Report Modal -->
+        <div id="summary-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                <button onclick="closeSummaryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
                 <div class="overflow-y-auto space-y-4 pr-1">
                     <div>
-                        <span id="modal-category" class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Recipe</span>
-                        <h3 id="modal-title" class="text-lg font-bold text-slate-800 mt-1">Recipe Name</h3>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">Analytics Report</span>
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mt-1">Date-Range Health Summary</h3>
                     </div>
-                    <div class="flex space-x-3 bg-slate-50 p-3 rounded-xl">
-                        <div><span class="text-[10px] text-slate-400 block">Calories</span><strong id="modal-cals" class="text-sm text-slate-800">0 kcal</strong></div>
-                        <div><span class="text-[10px] text-slate-400 block">Protein</span><strong id="modal-protein" class="text-sm text-emerald-600">0g</strong></div>
-                        <div><span class="text-[10px] text-slate-400 block">Fiber</span><strong id="modal-fiber" class="text-sm text-blue-600">0g</strong></div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">Start Date</label>
+                            <input type="date" id="report-start" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">End Date</label>
+                            <input type="date" id="report-end" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+                        </div>
+                    </div>
+                    <button onclick="generateDateRangeReport()" class="w-full bg-indigo-600 text-white font-semibold py-2 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                        Generate Report
+                    </button>
+                    <div id="summary-content" class="bg-slate-50 dark:bg-slate-700 p-4 rounded-xl text-xs space-y-2">
+                        <p class="text-slate-400 text-center">Select date range and click generate.</p>
+                    </div>
+                    <button onclick="alert('Report exported successfully!')" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                        Export Report File
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recipe Details Modal -->
+        <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white dark:bg-slate-800 dark:text-white h-[75%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <div class="overflow-y-auto space-y-4 pr-1">
+                    <div>
+                        <span id="modal-category" class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">Recipe</span>
+                        <h3 id="modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Recipe Name</h3>
+                    </div>
+                    <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Calories</span><strong id="modal-cals" class="text-sm text-slate-800 dark:text-white">0 kcal</strong></div>
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Protein</span><strong id="modal-protein" class="text-sm text-emerald-600 dark:text-emerald-400">0g</strong></div>
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Fiber</span><strong id="modal-fiber" class="text-sm text-blue-600 dark:text-blue-400">0g</strong></div>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Ingredients</h4>
-                        <p id="modal-ingredients" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl"></p>
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Portion / Weight</h4>
+                        <p id="modal-ingredients" class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl"></p>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Preparation Instructions</h4>
-                        <ol id="modal-instructions" class="text-xs text-slate-600 space-y-2 list-decimal list-inside bg-slate-50 p-3 rounded-xl">
-                            <!-- Dynamic instructions -->
-                        </ol>
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Recipe Author</h4>
+                        <p id="modal-author" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950 p-3 rounded-xl"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Details Modal -->
+        <div id="workout-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+            <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                <button onclick="closeWorkoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <div class="overflow-y-auto space-y-4 pr-1">
+                    <div>
+                        <span id="workout-modal-cat" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">Workout</span>
+                        <h3 id="workout-modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Workout Title</h3>
+                    </div>
+                    <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Duration</span><strong id="workout-modal-duration" class="text-sm text-slate-800 dark:text-white">20 mins</strong></div>
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span><strong id="workout-modal-burn" class="text-sm text-orange-500">200 kcal</strong></div>
+                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Level</span><strong id="workout-modal-level" class="text-sm text-blue-600 dark:text-blue-400">Beginner</strong></div>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Exercises & Live Simulation Previews</h4>
+                        <div id="workout-modal-exercises" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Sticky Bottom Navigation Bar -->
-        <nav class="absolute bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center shadow-lg z-20 shrink-0">
-            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-emerald-600 transition">
+        <nav id="bottom-nav" class="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 flex justify-between items-center shadow-lg z-20 shrink-0 transition-colors duration-200">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-emerald-600 dark:text-emerald-400 transition">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium mt-1">Home</span>
             </button>
-            <button onclick="switchTab('tracker')" id="nav-tracker" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
-                <i data-lucide="activity" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Tracker</span>
-            </button>
-            <button onclick="switchTab('meals')" id="nav-meals" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
+            <button onclick="switchTab('meals')" id="nav-meals" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
                 <i data-lucide="utensils" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium mt-1">Meals</span>
             </button>
-            <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 transition">
+            <button onclick="switchTab('workouts')" id="nav-workouts" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i data-lucide="dumbbell" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium mt-1">Workouts</span>
+            </button>
+            <button onclick="switchTab('therapy')" id="nav-therapy" class="nav-btn hidden flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                <i data-lucide="syringe" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium mt-1">Therapy</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
                 <i data-lucide="settings" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium mt-1">Settings</span>
             </button>
@@ -246,115 +631,174 @@
     <script>
         lucide.createIcons();
 
-        const recipeDatabase = [
-            { name: "Grilled Chicken & Broccoli Bowl", ingredients: ["chicken", "broccoli", "rice"], calories: 480, protein: 42, fiber: 6, instructions: ["Season chicken breast with salt, pepper, and garlic powder.", "Grill chicken over medium heat for 6-7 minutes per side until fully cooked.", "Steam broccoli florets until tender-crisp.", "Serve grilled chicken and broccoli over a warm bed of cooked rice."] },
-            { name: "Chicken & Quinoa Salad", ingredients: ["chicken", "quinoa", "spinach", "cucumber"], calories: 410, protein: 38, fiber: 5, instructions: ["Cook quinoa according to package instructions and let cool.", "Chop spinach and dice cucumbers.", "Slice grilled chicken breast.", "Toss all ingredients together with a light olive oil and lemon dressing."] },
-            { name: "Lemon Herb Chicken Breast with Asparagus", ingredients: ["chicken", "asparagus", "lemon", "olive oil"], calories: 360, protein: 45, fiber: 4, instructions: ["Preheat oven to 400°F (200°C).", "Place chicken and trimmed asparagus on a baking sheet.", "Drizzle with olive oil, fresh lemon juice, and herbs.", "Bake for 20 minutes until chicken is cooked through."] },
-            { name: "Chicken Fajita Lettuce Wraps", ingredients: ["chicken", "bell peppers", "onion", "lettuce"], calories: 320, protein: 34, fiber: 6, instructions: ["Slice chicken, bell peppers, and onions into thin strips.", "Sauté in a skillet with fajita spices until tender and browned.", "Spoon mixture into crisp lettuce leaves and serve."] },
-            { name: "Teriyaki Chicken with Brown Rice", ingredients: ["chicken", "brown rice", "broccoli", "soy sauce"], calories: 490, protein: 40, fiber: 5, instructions: ["Cook brown rice.", "Sauté diced chicken until golden brown.", "Add broccoli and soy sauce, simmering until tender.", "Serve hot over brown rice."] },
-            { name: "Garlic Butter Chicken & Zucchini Noodles", ingredients: ["chicken", "zucchini", "garlic", "butter"], calories: 340, protein: 39, fiber: 3, instructions: ["Spiralize zucchini into noodles.", "Cook chicken breast in a skillet with garlic and butter until done.", "Toss zucchini noodles in the pan for 2 minutes and serve."] },
-            { name: "Chicken & Sweet Potato Mash", ingredients: ["chicken", "sweet potato", "olive oil"], calories: 430, protein: 38, fiber: 7, instructions: ["Roast or boil sweet potatoes until soft, then mash with olive oil.", "Grill or bake chicken breast.", "Serve chicken alongside warm sweet potato mash."] },
-            { name: "Spicy Chicken & Black Bean Bowl", ingredients: ["chicken", "black beans", "corn", "rice"], calories: 510, protein: 44, fiber: 9, instructions: ["Warm black beans and corn in a pan with spices.", "Grill seasoned chicken.", "Combine over rice and mix well."] },
-            { name: "Baked Chicken Parmesan with Spinach", ingredients: ["chicken", "tomato sauce", "mozzarella", "spinach"], calories: 460, protein: 46, fiber: 4, instructions: ["Bake chicken breast topped with tomato sauce and mozzarella cheese.", "Serve over a bed of fresh sautéed spinach."] },
-            { name: "Chicken and Mushroom Stir Fry", ingredients: ["chicken", "mushrooms", "snap peas", "soy sauce"], calories: 380, protein: 41, fiber: 5, instructions: ["Slice chicken and sauté with sliced mushrooms and snap peas.", "Add soy sauce and stir-fry until cooked."] },
-            { name: "Turkey Wrap with Hummus", ingredients: ["turkey", "tortilla", "hummus", "spinach"], calories: 410, protein: 28, fiber: 6, instructions: ["Spread hummus across a whole wheat tortilla.", "Layer with sliced turkey breast and fresh spinach.", "Roll tightly and slice in half."] },
-            { name: "Ground Turkey & Sweet Potato Skillet", ingredients: ["turkey", "sweet potato", "bell peppers", "onion"], calories: 440, protein: 36, fiber: 7, instructions: ["Brown ground turkey in a skillet.", "Add diced sweet potatoes, bell peppers, and onions; cover and cook until tender."] },
-            { name: "Turkey Meatballs with Zucchini Pasta", ingredients: ["turkey", "zucchini", "tomato sauce", "garlic"], calories: 350, protein: 32, fiber: 5, instructions: ["Bake turkey meatballs.", "Serve over zucchini noodles tossed in warm tomato garlic sauce."] },
-            { name: "Lean Turkey Burger (No Bun)", ingredients: ["turkey", "lettuce", "tomato", "avocado"], calories: 390, protein: 33, fiber: 4, instructions: ["Grill turkey patty.", "Wrap in large lettuce leaves with tomato slices and avocado."] },
-            { name: "Turkey & White Bean Soup", ingredients: ["turkey", "white beans", "carrots", "celery"], calories: 310, protein: 27, fiber: 8, instructions: ["Simmer diced turkey, white beans, carrots, and celery in broth until vegetables are tender."] },
-            { name: "Quick Beef Stir Fry", ingredients: ["beef", "bell peppers", "soy sauce", "rice"], calories: 550, protein: 35, fiber: 4, instructions: ["Slice lean beef and bell peppers.", "Quickly stir-fry in a hot skillet with soy sauce and serve over rice."] },
-            { name: "Lean Beef & Quinoa Stuffed Peppers", ingredients: ["beef", "quinoa", "bell peppers", "tomato sauce"], calories: 460, protein: 32, fiber: 7, instructions: ["Hollow out bell peppers.", "Stuff with cooked quinoa, lean ground beef, and tomato sauce, then bake."] },
-            { name: "Steak Salad with Balsamic Vinaigrette", ingredients: ["beef", "spinach", "cherry tomatoes", "balsamic"], calories: 420, protein: 36, fiber: 3, instructions: ["Grill steak to desired doneness and slice thin.", "Place over spinach and cherry tomatoes with balsamic dressing."] },
-            { name: "Beef & Vegetable Skewer Plate", ingredients: ["beef", "zucchini", "mushrooms", "onion"], calories: 390, protein: 34, fiber: 4, instructions: ["Thread beef chunks, zucchini, mushrooms, and onions onto skewers and grill."] },
-            { name: "Pork Tenderloin with Roasted Brussels Sprouts", ingredients: ["pork", "brussels sprouts", "olive oil"], calories: 430, protein: 40, fiber: 6, instructions: ["Roast pork tenderloin and halved Brussels sprouts tossed in olive oil at 400°F."] },
-            { name: "Salmon with Asparagus & Quinoa", ingredients: ["salmon", "asparagus", "quinoa"], calories: 520, protein: 38, fiber: 6, instructions: ["Bake salmon and asparagus at 400°F for 12 minutes.", "Serve alongside fluffy quinoa."] },
-            { name: "Garlic Butter Shrimp & Zucchini Noodles", ingredients: ["shrimp", "zucchini", "garlic", "olive oil"], calories: 340, protein: 30, fiber: 3, instructions: ["Sauté shrimp in garlic and olive oil.", "Toss in zucchini noodles until warm."] },
-            { name: "Baked Lemon Cod with Sweet Potato", ingredients: ["cod", "sweet potato", "lemon", "broccoli"], calories: 380, protein: 35, fiber: 7, instructions: ["Bake cod fillet with lemon slices alongside sweet potato wedges and broccoli."] },
-            { name: "Tuna & White Bean Salad", ingredients: ["tuna", "white beans", "red onion", "olive oil"], calories: 350, protein: 32, fiber: 7, instructions: ["Mix canned tuna, rinsed white beans, diced red onion, and olive oil."] },
-            { name: "Shrimp & Avocado Salad", ingredients: ["shrimp", "avocado", "spinach", "cucumber"], calories: 330, protein: 28, fiber: 6, instructions: ["Toss boiled shrimp with fresh spinach, diced avocado, and cucumber."] },
-            { name: "Tofu Scramble with Spinach", ingredients: ["tofu", "spinach", "mushrooms"], calories: 240, protein: 18, fiber: 5, instructions: ["Crumble firm tofu into a skillet and sauté with spinach and mushrooms and turmeric."] },
-            { name: "Lentil & Sweet Potato Soup", ingredients: ["lentils", "sweet potato", "onion", "carrots"], calories: 320, protein: 16, fiber: 12, instructions: ["Boil lentils, diced sweet potatoes, onions, and carrots in vegetable broth until soft."] },
-            { name: "Chickpea & Spinach Buddha Bowl", ingredients: ["chickpeas", "spinach", "quinoa", "tahini"], calories: 450, protein: 17, fiber: 11, instructions: ["Assemble warm quinoa, roasted chickpeas, and fresh spinach in a bowl with a tahini drizzle."] },
-            { name: "Crispy Tofu & Peanut Broccoli Stir Fry", ingredients: ["tofu", "broccoli", "peanut butter", "soy sauce"], calories: 430, protein: 22, fiber: 7, instructions: ["Pan-fry tofu until crispy.", "Toss with steamed broccoli and a peanut butter-soy sauce mixture."] },
-            { name: "Avocado Egg Toast", ingredients: ["egg", "avocado", "bread"], calories: 310, protein: 14, fiber: 5, instructions: ["Toast whole grain bread, top with mashed avocado and a fried egg."] },
-            { name: "Protein Oatmeal with Banana", ingredients: ["oats", "banana", "milk", "protein powder"], calories: 350, protein: 24, fiber: 7, instructions: ["Cook oats in milk, mix in protein powder, and top with banana slices."] },
-            { name: "Greek Yogurt Berry Parfait", ingredients: ["yogurt", "berries", "honey", "granola"], calories: 280, protein: 20, fiber: 4, instructions: ["Layer Greek yogurt, berries, granola, and honey in a cup."] },
-            { name: "Spinach & Mushroom Egg White Omelet", ingredients: ["egg whites", "spinach", "mushrooms", "feta"], calories: 210, protein: 22, fiber: 3, instructions: ["Whisk egg whites and cook in a non-stick pan with spinach, mushrooms, and feta."] },
-            { name: "Protein Peanut Butter Smoothie", ingredients: ["protein powder", "peanut butter", "banana", "milk"], calories: 390, protein: 32, fiber: 4, instructions: ["Blend protein powder, peanut butter, banana, and milk until smooth."] },
-            { name: "Berry Antioxidant Protein Shake", ingredients: ["protein powder", "berries", "greek yogurt", "water"], calories: 270, protein: 30, fiber: 6, instructions: ["Blend all ingredients together until creamy."] },
-            { name: "Classic Greek Salad with Feta", ingredients: ["cucumber", "tomatoes", "feta", "olives", "olive oil"], calories: 310, protein: 8, fiber: 4, instructions: ["Chop cucumbers and tomatoes, toss with feta, olives, and olive oil."] },
-            { name: "Quinoa Harvest Salad", ingredients: ["quinoa", "sweet potato", "spinach", "walnuts", "balsamic"], calories: 400, protein: 12, fiber: 8, instructions: ["Toss cooked quinoa, roasted sweet potato cubes, spinach, and walnuts with balsamic."] },
-            { name: "Apple Slices with Peanut Butter", ingredients: ["apple", "peanut butter"], calories: 250, protein: 7, fiber: 5, instructions: ["Slice apple and serve with natural peanut butter for dipping."] },
-            { name: "Celery Sticks with Almond Butter", ingredients: ["celery", "almond butter"], calories: 210, protein: 6, fiber: 4, instructions: ["Fill celery stalks with almond butter."] },
-            { name: "Classic Minestrone Soup", ingredients: ["pasta", "beans", "carrots", "celery", "tomato sauce"], calories: 280, protein: 11, fiber: 9, instructions: ["Simmer pasta, beans, carrots, celery, and tomato sauce in broth until tender."] },
-            { name: "Baked Tilapia with Mango Salsa", ingredients: ["tilapia", "mango", "bell peppers", "cilantro"], calories: 310, protein: 30, fiber: 4, instructions: ["Bake tilapia fillets.", "Top with fresh chopped mango, bell peppers, and cilantro salsa."] },
-            { name: "Salmon & Brown Rice Poke Bowl", ingredients: ["salmon", "brown rice", "cucumber", "edamame"], calories: 510, protein: 36, fiber: 6, instructions: ["Layer brown rice, diced cooked salmon, cucumber slices, and edamame."] },
-            { name: "Tuna Salad Lettuce Boats", ingredients: ["tuna", "celery", "greek yogurt", "lettuce"], calories: 260, protein: 29, fiber: 2, instructions: ["Mix tuna, chopped celery, and Greek yogurt; spoon into lettuce leaves."] },
-            { name: "Garlic Shrimp & Cauliflower Rice", ingredients: ["shrimp", "cauliflower", "garlic", "spinach"], calories: 290, protein: 31, fiber: 5, instructions: ["Sauté shrimp and garlic, toss with cauliflower rice and spinach until warm."] },
-            { name: "Baked Halibut with Green Beans", ingredients: ["halibut", "green beans", "lemon", "olive oil"], calories: 370, protein: 34, fiber: 5, instructions: ["Bake halibut and green beans drizzled with olive oil and lemon juice."] },
-            { name: "Black Bean & Corn Quinoa Salad", ingredients: ["black beans", "corn", "quinoa", "lime"], calories: 380, protein: 14, fiber: 10, instructions: ["Mix cooked quinoa, black beans, corn, and fresh lime juice."] },
-            { name: "Mediterranean Hummus & Falafel Wrap", ingredients: ["falafel", "tortilla", "hummus", "cucumber"], calories: 440, protein: 15, fiber: 9, instructions: ["Wrap baked falafel, hummus, and cucumber slices inside a tortilla."] },
-            { name: "Tempeh & Roasted Vegetable Bowl", ingredients: ["tempeh", "bell peppers", "zucchini", "brown rice"], calories: 420, protein: 24, fiber: 8, instructions: ["Pan-fry sliced tempeh and roast vegetables, serve over brown rice."] },
-            { name: "Spicy Chickpea & Tomato Stew", ingredients: ["chickpeas", "tomato sauce", "spinach", "garlic"], calories: 310, protein: 13, fiber: 9, instructions: ["Simmer chickpeas in tomato sauce and garlic with fresh spinach until wilted."] },
-            { name: "Zucchini Boats Stuffed with Lentils", ingredients: ["zucchini", "lentils", "tomato sauce", "onion"], calories: 280, protein: 14, fiber: 8, instructions: ["Scoop out zucchini halves, stuff with cooked lentils and tomato sauce, then bake."] },
-            { name: "Edamame & Sesame Noodle Salad", ingredients: ["edamame", "noodles", "cabbage", "sesame"], calories: 390, protein: 19, fiber: 7, instructions: ["Toss cooked noodles with shelled edamame, shredded cabbage, and sesame dressing."] },
-            { name: "Chia Seed Pudding with Almond Milk & Berries", ingredients: ["chia seeds", "almond milk", "berries", "honey"], calories: 260, protein: 6, fiber: 11, instructions: ["Mix chia seeds and almond milk, chill overnight, and top with berries and honey."] },
-            { name: "Whole Wheat Pancakes with Blueberries", ingredients: ["flour", "milk", "egg", "blueberries"], calories: 340, protein: 12, fiber: 5, instructions: ["Make pancake batter using whole wheat flour, milk, and eggs; fold in blueberries and cook on griddle."] },
-            { name: "Scrambled Eggs with Smoked Salmon", ingredients: ["egg", "salmon", "spinach", "bread"], calories: 380, protein: 26, fiber: 3, instructions: ["Scramble eggs and fold in smoked salmon and spinach, serve with toast."] },
-            { name: "Overnight Oats with Peanut Butter & Chia", ingredients: ["oats", "milk", "peanut butter", "chia seeds"], calories: 410, protein: 16, fiber: 9, instructions: ["Combine oats, milk, peanut butter, and chia seeds in a jar and refrigerate overnight."] },
-            { name: "Baked Sweet Potato & Egg Hash", ingredients: ["sweet potato", "egg", "bell peppers", "onion"], calories: 350, protein: 15, fiber: 6, instructions: ["Roast diced sweet potatoes and peppers, make wells and crack eggs into them to bake."] },
-            { name: "Cottage Cheese & Pineapple Bowl", ingredients: ["cottage cheese", "pineapple", "walnuts"], calories: 290, protein: 28, fiber: 3, instructions: ["Scoop cottage cheese into a bowl and top with pineapple chunks and walnuts."] },
-            { name: "Shakshuka with Poached Eggs", ingredients: ["egg", "tomato sauce", "bell peppers", "onion"], calories: 290, protein: 16, fiber: 5, instructions: ["Simmer spiced tomato sauce with peppers and onions, poach eggs directly in the sauce."] },
-            { name: "Almond Butter & Banana Toast", ingredients: ["bread", "almond butter", "banana", "chia seeds"], calories: 360, protein: 11, fiber: 7, instructions: ["Spread almond butter on toast, top with banana slices and chia seeds."] },
-            { name: "Green Breakfast Smoothie Bowl", ingredients: ["spinach", "banana", "protein powder", "almond milk"], calories: 310, protein: 25, fiber: 6, instructions: ["Blend spinach, banana, protein powder, and almond milk into a thick bowl consistency."] },
-            { name: "Boiled Eggs & Whole Wheat Crackers", ingredients: ["egg", "crackers", "cucumber"], calories: 250, protein: 14, fiber: 3, instructions: ["Boil eggs and serve with whole wheat crackers and sliced cucumber."] },
-            { name: "Berry & Spinach Breakfast Muffins", ingredients: ["oats", "spinach", "berries", "egg"], calories: 230, protein: 9, fiber: 4, instructions: ["Blend ingredients into muffin batter and bake at 350°F for 15 minutes."] },
-            { name: "Green Detox Protein Smoothie", ingredients: ["protein powder", "spinach", "green apple", "celery", "lemon"], calories: 240, protein: 26, fiber: 7, instructions: ["Blend all ingredients with water or ice until smooth."] },
-            { name: "Chocolate Banana Oats Smoothie", ingredients: ["protein powder", "banana", "oats", "cocoa powder"], calories: 360, protein: 28, fiber: 6, instructions: ["Blend protein powder, banana, oats, cocoa powder, and milk."] },
-            { name: "Tropical Mango Coconut Protein Shake", ingredients: ["protein powder", "mango", "coconut milk", "spinach"], calories: 340, protein: 27, fiber: 4, instructions: ["Blend frozen mango chunks, coconut milk, protein powder, and spinach."] },
-            { name: "Cold Brew Coffee Protein Shake", ingredients: ["protein powder", "coffee", "milk", "ice"], calories: 210, protein: 26, fiber: 1, instructions: ["Blend cold brew coffee, protein powder, and milk with ice."] },
-            { name: "Almond Vanilla Protein Smoothie", ingredients: ["protein powder", "almond milk", "almond butter", "chia seeds"], calories: 330, protein: 29, fiber: 5, instructions: ["Blend almond milk, vanilla protein, almond butter, and chia seeds."] },
-            { name: "Avocado Spinach Green Smoothie", ingredients: ["avocado", "spinach", "banana", "almond milk"], calories: 290, protein: 5, fiber: 8, instructions: ["Blend avocado, spinach, banana, and almond milk."] },
-            { name: "Pumpkin Spice Protein Shake", ingredients: ["protein powder", "pumpkin puree", "milk", "cinnamon"], calories: 250, protein: 27, fiber: 4, instructions: ["Blend pumpkin puree, protein powder, milk, and cinnamon."] },
-            { name: "Mixed Berry Chia Power Smoothie", ingredients: ["berries", "chia seeds", "greek yogurt", "water"], calories: 260, protein: 15, fiber: 10, instructions: ["Blend berries, chia seeds, and Greek yogurt."] },
-            { name: "Kale & Apple Crunch Salad", ingredients: ["kale", "apple", "walnuts", "lemon dressing"], calories: 290, protein: 6, fiber: 7, instructions: ["Massage chopped kale with lemon dressing, toss with sliced apples and walnuts."] },
-            { name: "Beetroot & Goat Cheese Salad", ingredients: ["beets", "goat cheese", "spinach", "walnuts"], calories: 340, protein: 11, fiber: 6, instructions: ["Layer roasted beets over spinach, top with crumbled goat cheese and walnuts."] },
-            { name: "Mediterranean Chickpea Salad", ingredients: ["chickpeas", "cucumber", "tomatoes", "lemon"], calories: 320, protein: 12, fiber: 9, instructions: ["Toss chickpeas, cucumbers, and tomatoes with fresh lemon juice and herbs."] },
-            { name: "Cucumber Avocado Refresh Salad", ingredients: ["cucumber", "avocado", "lemon", "cilantro"], calories: 230, protein: 3, fiber: 6, instructions: ["Dice cucumbers and avocado, toss with lemon and fresh cilantro."] },
-            { name: "Watermelon Mint Feta Salad", ingredients: ["watermelon", "mint", "feta", "olive oil"], calories: 220, protein: 6, fiber: 2, instructions: ["Cube watermelon, toss with chopped mint, crumbled feta, and a drizzle of olive oil."] },
-            { name: "Roasted Carrot & Lentil Salad", ingredients: ["carrots", "lentils", "spinach", "tahini"], calories: 350, protein: 15, fiber: 11, instructions: ["Roast carrots, toss with cooked lentils, spinach, and tahini dressing."] },
-            { name: "Broccoli Slaw with Sunflower Seeds", ingredients: ["broccoli", "cabbage", "sunflower seeds", "yogurt dressing"], calories: 270, protein: 9, fiber: 7, instructions: ["Mix chopped broccoli stems, cabbage, and sunflower seeds with light yogurt dressing."] },
-            { name: "Tomato Basil Mozzarella Caprese", ingredients: ["tomatoes", "mozzarella", "basil", "olive oil"], calories: 310, protein: 14, fiber: 2, instructions: ["Layer tomato and mozzarella slices with fresh basil leaves and olive oil."] },
-            { name: "Roasted Chickpea Crunch", ingredients: ["chickpeas", "olive oil", "spices"], calories: 190, protein: 9, fiber: 6, instructions: ["Toss drained chickpeas in olive oil and spices, roast at 400°F until crunchy."] },
-            { name: "Mixed Nuts & Dark Chocolate Bark", ingredients: ["almonds", "walnuts", "dark chocolate"], calories: 280, protein: 6, fiber: 4, instructions: ["Melt dark chocolate, mix in chopped almonds and walnuts, let set and break into pieces."] },
-            { name: "Cucumber Slices with Hummus", ingredients: ["cucumber", "hummus"], calories: 160, protein: 5, fiber: 4, instructions: ["Slice crisp cucumbers and serve with your favorite hummus."] },
-            { name: "Greek Yogurt with Honey & Walnuts", ingredients: ["yogurt", "honey", "walnuts"], calories: 240, protein: 15, fiber: 2, instructions: ["Spoon Greek yogurt into a bowl, drizzle with honey and top with walnuts."] },
-            { name: "Hard Boiled Eggs with Everything Seasoning", ingredients: ["egg", "spices"], calories: 140, protein: 12, fiber: 0, instructions: ["Boil eggs, peel, cut in half, and sprinkle with everything bagel seasoning."] },
-            { name: "Edamame Pods with Sea Salt", ingredients: ["edamame", "salt"], calories: 180, protein: 17, fiber: 8, instructions: ["Steam edamame pods and sprinkle with sea salt."] },
-            { name: "Rice Cake with Avocado & Chili Flakes", ingredients: ["rice cake", "avocado", "spices"], calories: 170, protein: 3, fiber: 4, instructions: ["Top a brown rice cake with mashed avocado and chili flakes."] },
-            { name: "Cottage Cheese with Cherry Tomatoes", ingredients: ["cottage cheese", "tomatoes"], calories: 190, protein: 24, fiber: 2, instructions: ["Mix cottage cheese with halved cherry tomatoes and pepper."] },
-            { name: "Tomato Basil Soup", ingredients: ["tomato sauce", "garlic", "onion", "milk"], calories: 210, protein: 5, fiber: 4, instructions: ["Simmer tomato sauce, garlic, onion, and a splash of milk; blend until smooth."] },
-            { name: "Broccoli Cheddar Soup (Light)", ingredients: ["broccoli", "milk", "cheese", "onion"], calories: 270, protein: 14, fiber: 4, instructions: ["Simmer broccoli and onion in broth, add milk and a little cheddar cheese."] },
-            { name: "Chicken Vegetable Soup", ingredients: ["chicken", "carrots", "celery", "onion"], calories: 240, protein: 28, fiber: 4, instructions: ["Simmer chicken breast, carrots, celery, and onions in broth until tender."] },
-            { name: "Black Bean Soup with Cilantro", ingredients: ["black beans", "onion", "garlic", "broth"], calories: 260, protein: 14, fiber: 12, instructions: ["Blend half of the simmered black beans with broth, garlic, and onions; garnish with cilantro."] },
-            { name: "Butternut Squash Soup", ingredients: ["squash", "onion", "garlic", "olive oil"], calories: 220, protein: 4, fiber: 6, instructions: ["Roast butternut squash, onion, and garlic, then blend with broth until creamy."] },
-            { name: "Vegetable Barley Soup", ingredients: ["barley", "carrots", "celery", "peas"], calories: 250, protein: 7, fiber: 8, instructions: ["Simmer pearl barley with chopped carrots, celery, and peas in vegetable broth."] },
-            { name: "Spicy Thai Coconut Soup with Tofu", ingredients: ["tofu", "coconut milk", "mushrooms", "ginger"], calories: 340, protein: 16, fiber: 4, instructions: ["Simmer coconut milk with ginger, mushrooms, and cubed tofu."] },
-            { name: "Beef & Vegetable Barley Stew", ingredients: ["beef", "barley", "carrots", "potatoes"], calories: 410, protein: 30, fiber: 7, instructions: ["Slow cook beef chunks with barley, carrots, and potatoes until tender."] },
-            { name: "White Bean & Kale Soup", ingredients: ["white beans", "kale", "garlic", "broth"], calories: 270, protein: 13, fiber: 10, instructions: ["Simmer white beans and garlic in broth, stirring in chopped kale until wilted."] },
-            { name: "Baked Cod with Roasted Vegetables", ingredients: ["cod", "bell peppers", "zucchini", "olive oil"], calories: 320, protein: 33, fiber: 5, instructions: ["Bake cod alongside bell peppers and zucchini tossed in olive oil."] },
-            { name: "Turkey Chili with Kidney Beans", ingredients: ["turkey", "kidney beans", "tomato sauce", "onion"], calories: 390, protein: 36, fiber: 11, instructions: ["Brown turkey with onions, add kidney beans and tomato sauce, and simmer."] },
-            { name: "Stuffed Acorn Squash with Quinoa & Pecans", ingredients: ["squash", "quinoa", "pecans", "cranberries"], calories: 380, protein: 9, fiber: 9, instructions: ["Roast halved acorn squash, fill with cooked quinoa, pecans, and dried cranberries."] },
-            { name: "Lemon Garlic Tilapia & Asparagus", ingredients: ["tilapia", "asparagus", "lemon", "garlic"], calories: 290, protein: 31, fiber: 4, instructions: ["Bake tilapia and asparagus with garlic and lemon slices."] },
-            { name: "Pork Chop with Apples & Cabbage", ingredients: ["pork", "apple", "cabbage", "onion"], calories: 410, protein: 37, fiber: 6, instructions: ["Pan-sear pork chops and serve over sautéed sliced apples, cabbage, and onions."] },
-            { name: "Sesame Ginger Tofu & Snap Peas", ingredients: ["tofu", "snap peas", "soy sauce", "brown rice"], calories: 390, protein: 21, fiber: 6, instructions: ["Pan-fry tofu, toss with snap peas and sesame-ginger soy sauce over brown rice."] },
-            { name: "Shrimp Fajita Bowl with Cauliflower Rice", ingredients: ["shrimp", "bell peppers", "cauliflower", "onion"], calories: 310, protein: 32, fiber: 6, instructions: ["Sauté shrimp and fajita vegetables over seasoned cauliflower rice."] },
-            { name: "Chicken & Brussels Sprout Sheet Pan Meal", ingredients: ["chicken", "brussels sprouts", "sweet potato"], calories: 440, protein: 41, fiber: 8, instructions: ["Roast chicken chunks, halved Brussels sprouts, and sweet potato cubes on a sheet pan."] },
-            { name: "Mediterranean Grilled Steak & Salad", ingredients: ["beef", "cucumber", "tomatoes", "olives"], calories: 450, protein: 38, fiber: 4, instructions: ["Grill steak and serve atop a Greek-inspired cucumber, tomato, and olive salad."] },
-            { name: "Mushroom & Spinach Risotto with Brown Rice", ingredients: ["brown rice", "mushrooms", "spinach", "parmesan"], calories: 380, protein: 12, fiber: 5, instructions: ["Simmer brown rice gradually with broth, mushrooms, and spinach until creamy, finish with parmesan."] }
+        let currentSteps = 7600;
+        let currentWater = 2.1;
+        let currentSleep = 7.5;
+        let goalSteps = 10000;
+        let goalWater = 3.0;
+        let goalSleep = 8.0;
+        let userName = "Alex";
+        let userAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80";
+        let uploadedAvatarData = "";
+        let currentTheme = localStorage.getItem('pulsefit_theme') || 'system';
+
+        const sharedCommunityRecipes = [
+            { name: "Grilled Chicken & Broccoli Bowl", weight: "350g cooked", calories: 480, protein: 42, fiber: 6, author: "PulseFit" },
+            { name: "Chicken & Quinoa Salad", weight: "300g cooked", calories: 410, protein: 38, fiber: 5, author: "PulseFit" },
+            { name: "Avocado Egg Toast", weight: "180g serving", calories: 310, protein: 14, fiber: 5, author: "PulseFit" },
+            { name: "Salmon with Asparagus & Quinoa", weight: "400g cooked", calories: 520, protein: 38, fiber: 6, author: "PulseFit" },
+            { name: "Greek Yogurt Berry Parfait", weight: "250g serving", calories: 280, protein: 20, fiber: 4, author: "PulseFit" }
+        ];
+
+        const workoutDatabase = [
+            {
+                id: 0,
+                title: "15-Min Morning Full Body HIIT",
+                category: "HIIT",
+                duration: "15 mins",
+                calories: 180,
+                level: "Beginner",
+                exercises: [
+                    { name: "Jumping Jacks", sets: "3 sets x 45 secs", tip: "Keep a steady rhythm and land softly on the balls of your feet.", icon: "activity", color: "text-emerald-500" },
+                    { name: "Bodyweight Squats", sets: "3 sets x 12 reps", tip: "Keep your chest up and push your hips back as if sitting in a chair.", icon: "arrow-down-circle", color: "text-blue-500" },
+                    { name: "Modified Push-ups", sets: "3 sets x 10 reps", tip: "Keep your core tight and elbows tucked at a 45-degree angle.", icon: "shield", color: "text-orange-500" },
+                    { name: "High Knees", sets: "3 sets x 30 secs", tip: "Drive your knees up toward your chest while pumping your arms.", icon: "zap", color: "text-purple-500" }
+                ]
+            },
+            {
+                id: 1,
+                title: "Desk Worker's Posture & Core Reset",
+                category: "Core",
+                duration: "12 mins",
+                calories: 120,
+                level: "Beginner",
+                exercises: [
+                    { name: "Plank Hold", sets: "3 sets x 30 secs", tip: "Engage your core and squeeze your glutes; avoid letting hips sag.", icon: "minus", color: "text-indigo-500" },
+                    { name: "Glute Bridges", sets: "3 sets x 15 reps", tip: "Drive through your heels and squeeze your glutes at the top.", icon: "arrow-up-circle", color: "text-emerald-500" },
+                    { name: "Cobra Stretch", sets: "3 sets x 20 secs", tip: "Lift chest gently off the floor while keeping shoulders down away from ears.", icon: "sunrise", color: "text-amber-500" },
+                    { name: "Seated Spinal Twist", sets: "2 sets x 30 secs per side", tip: "Keep your spine tall and twist gently from the core to relieve lower back tension.", icon: "refresh-cw", color: "text-cyan-500" }
+                ]
+            },
+            {
+                id: 2,
+                title: "No-Equipment Strength Builder",
+                category: "Strength",
+                duration: "20 mins",
+                calories: 220,
+                level: "Intermediate",
+                exercises: [
+                    { name: "Walking Lunges", sets: "3 sets x 16 steps", tip: "Take controlled steps and keep your torso upright throughout.", icon: "move", color: "text-blue-600" },
+                    { name: "Bodyweight Squats", sets: "3 sets x 15 reps", tip: "Maintain an upright posture and push through your mid-foot.", icon: "arrow-down-circle", color: "text-blue-500" },
+                    { name: "Push-ups", sets: "3 sets x 12 reps", tip: "Lower your chest entirely to the level of your elbows.", icon: "shield", color: "text-orange-500" }
+                ]
+            },
+            {
+                id: 3,
+                title: "Evening Wind-Down Mobility Flow",
+                category: "Recovery",
+                duration: "10 mins",
+                calories: 70,
+                level: "Beginner",
+                exercises: [
+                    { name: "Cat-Cow Stretch", sets: "2 sets x 10 reps", tip: "Inhale as you drop your belly and look up; exhale as you arch your back.", icon: "refresh-cw", color: "text-cyan-500" },
+                    { name: "Child's Pose", sets: "2 sets x 60 secs", tip: "Settle hips back toward your heels and extend arms forward, breathing deeply.", icon: "moon", color: "text-indigo-400" },
+                    { name: "Hamstring Stretch", sets: "2 sets x 30 secs per leg", tip: "Keep your spine straight and hinge gently forward from your hips.", icon: "arrow-down", color: "text-emerald-500" },
+                    { name: "Deep Breathing & Torso Openers", sets: "2 sets x 60 secs", tip: "Inhale deeply through your nose, expanding your ribcage, and exhale slowly.", icon: "wind", color: "text-blue-400" }
+                ]
+            },
+            {
+                id: 4,
+                title: "Cardio Fat Burner Blitz",
+                category: "HIIT",
+                duration: "20 mins",
+                calories: 250,
+                level: "Intermediate",
+                exercises: [
+                    { name: "Mountain Climbers", sets: "3 sets x 40 secs", tip: "Maintain a strong plank position while driving knees forward rapidly.", icon: "trending-up", color: "text-red-500" },
+                    { name: "Jumping Jacks", sets: "3 sets x 50 secs", tip: "Stay light on your feet and maintain a high tempo.", icon: "activity", color: "text-emerald-500" }
+                ]
+            }
         ];
 
         let loggedMeals = [];
+        let completedWorkouts = [];
+        let injectionLogs = [];
+
+        applyTheme(currentTheme);
+        updateStepDisplay();
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        document.getElementById('inj-date').value = todayStr;
+
+        function setTheme(mode) {
+            currentTheme = mode;
+            localStorage.setItem('pulsefit_theme', mode);
+            applyTheme(mode);
+        }
+
+        function applyTheme(mode) {
+            const htmlEl = document.documentElement;
+            ['light', 'dark', 'system'].forEach(m => {
+                const btn = document.getElementById(`theme-btn-${m}`);
+                if (btn) {
+                    btn.className = (m === mode) 
+                        ? "bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-xs transition shadow-sm"
+                        : "bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm";
+                }
+            });
+
+            if (mode === 'dark') {
+                htmlEl.classList.add('dark');
+            } else if (mode === 'light') {
+                htmlEl.classList.remove('dark');
+            } else {
+                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    htmlEl.classList.add('dark');
+                } else {
+                    htmlEl.classList.remove('dark');
+                }
+            }
+        }
+
+        function toggleTherapyNav(checkbox) {
+            const therapyBtn = document.getElementById('nav-therapy');
+            if (checkbox.checked) {
+                therapyBtn.classList.remove('hidden');
+                therapyBtn.classList.add('flex');
+            } else {
+                therapyBtn.classList.remove('flex');
+                therapyBtn.classList.add('hidden');
+                // If currently on therapy screen, switch back home
+                if (document.getElementById('screen-therapy').classList.contains('active')) {
+                    switchTab('home');
+                }
+            }
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedAvatarData = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveProfile() {
+            const nameVal = document.getElementById('input-profile-name').value.trim();
+            if (nameVal) {
+                userName = nameVal;
+                document.getElementById('welcome-name').innerText = userName;
+            }
+            if (uploadedAvatarData) {
+                userAvatar = uploadedAvatarData;
+                document.getElementById('header-avatar').src = userAvatar;
+            }
+            alert('Profile updated successfully!');
+            switchTab('home');
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -362,18 +806,152 @@
 
             const titles = {
                 'home': "Today's Overview",
-                'meals': "Smart Meal Planner",
-                'tracker': "Activity & Fitness",
-                'settings': "App Settings"
+                'meals': "Community Meal Planner",
+                'workouts': "Workout Routines",
+                'steps': "Step Counter & Walking",
+                'sleep': "Sleep & Recovery",
+                'therapy': "Peptide & Injection Log",
+                'settings': "Profile & Settings"
             };
             document.getElementById('header-title').innerText = titles[tabId];
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-emerald-600');
+                btn.classList.remove('text-emerald-600', 'dark:text-emerald-400');
                 btn.classList.add('text-slate-400');
             });
             document.getElementById('nav-' + tabId).classList.remove('text-slate-400');
-            document.getElementById('nav-' + tabId).classList.add('text-emerald-600');
+            document.getElementById('nav-' + tabId).classList.add('text-emerald-600', 'dark:text-emerald-400');
+
+            if (tabId === 'workouts') {
+                filterWorkouts('All');
+            }
+        }
+
+        function saveGoals() {
+            goalSteps = parseInt(document.getElementById('input-goal-steps').value) || 10000;
+            goalWater = parseFloat(document.getElementById('input-goal-water').value) || 3.0;
+            goalSleep = parseFloat(document.getElementById('input-goal-sleep').value) || 8.0;
+
+            updateStepDisplay();
+            document.getElementById('goal-water-display').innerText = `/ ${goalWater.toFixed(1)}L goal`;
+            
+            alert('Daily goals successfully updated!');
+            switchTab('home');
+        }
+
+        function openSummaryModal() {
+            document.getElementById('report-start').value = todayStr;
+            document.getElementById('report-end').value = todayStr;
+            generateDateRangeReport();
+            document.getElementById('summary-modal').classList.remove('hidden');
+        }
+
+        function closeSummaryModal() {
+            document.getElementById('summary-modal').classList.add('hidden');
+        }
+
+        function generateDateRangeReport() {
+            const start = document.getElementById('report-start').value || '2026-08-01';
+            const end = document.getElementById('report-end').value || todayStr;
+            let totalCals = loggedMeals.reduce((acc, m) => acc + m.calories, 0);
+            let totalProtein = loggedMeals.reduce((acc, m) => acc + m.protein, 0);
+            let totalFiber = loggedMeals.reduce((acc, m) => acc + m.fiber, 0);
+            let workoutSummary = completedWorkouts.length > 0 ? completedWorkouts.map(w => `• ${w.title} (${w.calories} kcal)`).join('<br>') : 'None recorded.';
+            let injSummary = injectionLogs.length > 0 ? injectionLogs.map(i => `• ${i.date}: ${i.units} units (Wt: ${i.weight})`).join('<br>') : 'None recorded.';
+
+            const html = `
+                <p><strong>Report Period:</strong> ${start} to ${end}</p>
+                <p><strong>User:</strong> ${userName}</p>
+                <hr class="border-slate-200 dark:border-slate-600 my-1">
+                <p><strong>Total Steps Logged:</strong> ${currentSteps.toLocaleString()} steps</p>
+                <p><strong>Water Average:</strong> ${currentWater.toFixed(1)}L / day</p>
+                <p><strong>Sleep Average:</strong> ${currentSleep}h / night</p>
+                <p><strong>Nutrition Intake:</strong> ${totalCals} kcal | P: ${totalProtein}g | F: ${totalFiber}g</p>
+                <p><strong>Workouts Logged:</strong><br>${workoutSummary}</p>
+                <p><strong>Injections / Therapy Logged:</strong><br>${injSummary}</p>
+            `;
+            document.getElementById('summary-content').innerHTML = html;
+        }
+
+        function logInjection() {
+            const date = document.getElementById('inj-date').value;
+            const units = document.getElementById('inj-units').value;
+            const weight = document.getElementById('inj-weight').value;
+
+            if (!date || !units || !weight) {
+                alert('Please fill out all injection details.');
+                return;
+            }
+
+            injectionLogs.push({ date, units, weight });
+            document.getElementById('inj-units').value = '';
+            document.getElementById('inj-weight').value = '';
+            renderInjections();
+            alert('Injection logged successfully!');
+        }
+
+        function renderInjections() {
+            const container = document.getElementById('injection-list');
+            if (injectionLogs.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">No injections logged yet.</div>`;
+                return;
+            }
+
+            let html = '';
+            injectionLogs.forEach((inj, idx) => {
+                html += `
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-xl flex justify-between items-center shadow-sm">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950 px-2 py-0.5 rounded">📅 ${inj.date}</span>
+                            <h5 class="text-xs font-semibold text-slate-800 dark:text-white mt-1">💉 Dose: ${inj.units} units</h5>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Wt: ${inj.weight}</span>
+                            <button onclick="removeInjection(${idx})" class="block text-slate-400 hover:text-red-500 transition mt-1 text-[10px] underline">Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function removeInjection(index) {
+            injectionLogs.splice(index, 1);
+            renderInjections();
+        }
+
+        function publishCustomRecipe() {
+            const name = document.getElementById('custom-meal-name').value.trim();
+            const weightVal = document.getElementById('custom-meal-weight').value.trim();
+            const calories = parseInt(document.getElementById('custom-meal-cals').value);
+            const protein = parseInt(document.getElementById('custom-meal-protein').value);
+            const fiber = parseInt(document.getElementById('custom-meal-fiber').value);
+
+            if (!name || isNaN(calories) || isNaN(protein) || isNaN(fiber)) {
+                alert('Please fill out all recipe fields correctly.');
+                return;
+            }
+
+            const weight = weightVal ? `${weightVal}g cooked` : '1 serving';
+            const newRecipe = {
+                name,
+                weight,
+                calories,
+                protein,
+                fiber,
+                author: `${userName} (Community Member)`
+            };
+
+            sharedCommunityRecipes.push(newRecipe);
+
+            document.getElementById('custom-meal-name').value = '';
+            document.getElementById('custom-meal-weight').value = '';
+            document.getElementById('custom-meal-cals').value = '';
+            document.getElementById('custom-meal-protein').value = '';
+            document.getElementById('custom-meal-fiber').value = '';
+
+            alert('Your recipe has been successfully published to the community database!');
+            findSuggestions();
         }
 
         function findSuggestions() {
@@ -381,31 +959,20 @@
             const container = document.getElementById('suggestions-list');
 
             if (!query) {
-                container.innerHTML = `
-                    <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                        Start typing ingredients above to see adaptive recipe recommendations!
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">Start typing above to search recipes!</div>`;
                 return;
             }
 
             const searchTerms = query.split(/[, ]+/).map(s => s.trim()).filter(s => s.length > 0);
-
-            const scoredRecipes = recipeDatabase.map(recipe => {
-                let matchCount = searchTerms.filter(term => 
-                    recipe.ingredients.some(ing => ing.includes(term))
-                ).length;
+            const scoredRecipes = sharedCommunityRecipes.map(recipe => {
+                let matchCount = searchTerms.filter(term => recipe.name.toLowerCase().includes(term) || recipe.weight.toLowerCase().includes(term)).length;
                 return { recipe, matchCount };
             }).filter(item => item.matchCount > 0);
 
             scoredRecipes.sort((a, b) => b.matchCount - a.matchCount);
 
             if (scoredRecipes.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 rounded-xl border border-slate-200">
-                        No recipe matches found for "${query}". Try items like <em>chicken</em>, <em>egg</em>, or <em>salmon</em>.
-                    </div>
-                `;
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">No matching recipes found. Try adding your own above!</div>`;
                 return;
             }
 
@@ -413,25 +980,23 @@
             scoredRecipes.forEach(({ recipe }) => {
                 const recipeJson = encodeURIComponent(JSON.stringify(recipe));
                 html += `
-                    <div onclick="openRecipeModal('${recipeJson}')" class="bg-white border border-emerald-100 p-3.5 rounded-xl flex justify-between items-center shadow-sm hover:border-emerald-300 hover:shadow-md transition cursor-pointer">
+                    <div onclick="openRecipeModal('${recipeJson}')" class="bg-white dark:bg-slate-800 border border-emerald-100 dark:border-emerald-900/50 p-3.5 rounded-xl flex justify-between items-center shadow-sm hover:border-emerald-300 transition cursor-pointer">
                         <div>
-                            <h5 class="text-sm font-semibold text-slate-800">${recipe.name}</h5>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Ingredients: ${recipe.ingredients.join(', ')}</p>
-                            <div class="flex space-x-2 mt-1">
-                                <span class="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">Protein: ${recipe.protein}g</span>
-                                <span class="text-[10px] text-blue-600 font-semibold bg-blue-50 px-2 py-0.5 rounded">Fiber: ${recipe.fiber}g</span>
+                            <h5 class="text-sm font-semibold text-slate-800 dark:text-white">${recipe.name}</h5>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Portion/Weight: ${recipe.weight}</p>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">P: ${recipe.protein}g</span>
+                                <span class="text-[10px] text-blue-600 dark:text-blue-400 font-semibold bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">F: ${recipe.fiber}g</span>
+                                <span class="text-[10px] text-slate-500 italic">👤 ${recipe.author}</span>
                             </div>
                         </div>
                         <div class="flex flex-col items-end space-y-2">
-                            <span class="text-xs font-bold text-slate-700">${recipe.calories} kcal</span>
-                            <button onclick="event.stopPropagation(); logSuggestedMeal('${recipe.name.replace(/'/g, "\\'")}', ${recipe.calories}, ${recipe.protein}, ${recipe.fiber})" class="bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition">
-                                Add
-                            </button>
+                            <span class="text-xs font-bold text-slate-700 dark:text-slate-300">${recipe.calories} kcal</span>
+                            <button onclick="event.stopPropagation(); logCommunityMeal('${recipe.name.replace(/'/g, "\\'")}', ${recipe.calories}, ${recipe.protein}, ${recipe.fiber})" class="bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-emerald-700 transition">Add</button>
                         </div>
                     </div>
                 `;
             });
-
             container.innerHTML = html;
         }
 
@@ -441,27 +1006,15 @@
             document.getElementById('modal-cals').innerText = `${recipe.calories} kcal`;
             document.getElementById('modal-protein').innerText = `${recipe.protein}g`;
             document.getElementById('modal-fiber').innerText = `${recipe.fiber}g`;
-            document.getElementById('modal-ingredients').innerText = recipe.ingredients.join(', ');
-
-            let instHtml = '';
-            if (recipe.instructions && recipe.instructions.length > 0) {
-                recipe.instructions.forEach(step => {
-                    instHtml += `<li>${step}</li>`;
-                });
-            } else {
-                instHtml = `<li>Prepare ingredients and cook over medium heat until ready.</li>`;
-            }
-            document.getElementById('modal-instructions').innerHTML = instHtml;
+            document.getElementById('modal-ingredients').innerText = `Portion Weight: ${recipe.weight}`;
+            document.getElementById('modal-author').innerText = `Recipe Author: ${recipe.author}`;
             document.getElementById('recipe-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('recipe-modal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('recipe-modal').classList.add('hidden'); }
 
-        function logSuggestedMeal(name, calories, protein, fiber) {
-            const type = document.getElementById('meal-type').value;
-            loggedMeals.push({ type, name, calories, protein, fiber });
+        function logCommunityMeal(name, calories, protein, fiber) {
+            loggedMeals.push({ name, calories, protein, fiber });
             renderLoggedMeals();
         }
 
@@ -478,11 +1031,7 @@
             const dashboardFiber = document.getElementById('dashboard-fiber');
             
             if (loggedMeals.length === 0) {
-                listContainer.innerHTML = `
-                    <div id="empty-state" class="text-center py-6 text-slate-400 text-xs">
-                        No meals added to your daily tracker yet.
-                    </div>
-                `;
+                listContainer.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">No meals added to your daily tracker yet.</div>`;
                 totalCaloriesContainer.innerText = 'Total: 0 kcal';
                 dashboardCalories.innerText = '0';
                 dashboardProtein.innerText = '0g';
@@ -490,31 +1039,24 @@
                 return;
             }
 
-            let totalCals = 0;
-            let totalProtein = 0;
-            let totalFiber = 0;
+            let totalCals = 0, totalProtein = 0, totalFiber = 0;
             let html = '';
-
             loggedMeals.forEach((meal, index) => {
                 totalCals += meal.calories;
                 totalProtein += meal.protein;
                 totalFiber += meal.fiber;
-
                 html += `
-                    <div class="bg-white border border-slate-100 p-3.5 rounded-xl flex justify-between items-center shadow-sm">
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3.5 rounded-xl flex justify-between items-center shadow-sm">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">${meal.type}</span>
-                            <h5 class="text-sm font-semibold text-slate-800 mt-1">${meal.name}</h5>
+                            <h5 class="text-sm font-semibold text-slate-800 dark:text-white">${meal.name}</h5>
                             <div class="flex space-x-2 mt-1">
-                                <span class="text-[10px] text-emerald-600 font-medium">P: ${meal.protein}g</span>
-                                <span class="text-[10px] text-blue-600 font-medium">F: ${meal.fiber}g</span>
+                                <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">P: ${meal.protein}g</span>
+                                <span class="text-[10px] text-blue-600 dark:text-blue-400 font-medium">F: ${meal.fiber}g</span>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <span class="text-xs font-bold text-slate-600">${meal.calories} kcal</span>
-                            <button onclick="removeMeal(${index})" class="text-slate-400 hover:text-red-500 transition">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-300">${meal.calories} kcal</span>
+                            <button onclick="removeMeal(${index})" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>
                 `;
@@ -525,6 +1067,153 @@
             dashboardCalories.innerText = totalCals.toLocaleString();
             dashboardProtein.innerText = `${totalProtein}g`;
             dashboardFiber.innerText = `${totalFiber}g`;
+            lucide.createIcons();
+        }
+
+        function logExtraSteps() {
+            const val = parseInt(document.getElementById('input-add-steps').value);
+            if (!isNaN(val) && val > 0) {
+                currentSteps += val;
+                updateStepDisplay();
+                document.getElementById('input-add-steps').value = '';
+                alert(`Successfully logged ${val.toLocaleString()} steps!`);
+                switchTab('home');
+            } else {
+                alert('Please enter a valid step amount.');
+            }
+        }
+
+        function updateStepDisplay() {
+            const remaining = Math.max(0, goalSteps - currentSteps);
+            const percentage = Math.min(100, Math.round((currentSteps / goalSteps) * 100));
+            const distanceKm = (currentSteps * 0.00075).toFixed(1);
+
+            document.getElementById('dashboard-steps').innerText = currentSteps.toLocaleString();
+            document.getElementById('goal-steps-display').innerText = `/ ${goalSteps.toLocaleString()} goal`;
+            document.getElementById('steps-remaining').innerText = remaining.toLocaleString();
+            document.getElementById('steps-progress-bar').style.width = percentage + '%';
+            document.getElementById('steps-percentage').innerText = percentage + '%';
+            document.getElementById('steps-distance').innerText = distanceKm + ' km';
+        }
+
+        function openWaterModal() { document.getElementById('water-modal').classList.remove('hidden'); }
+        function closeWaterModal() { document.getElementById('water-modal').classList.add('hidden'); }
+        function addWater(ml) {
+            currentWater += (ml / 1000);
+            document.getElementById('dashboard-water').innerText = currentWater.toFixed(1) + 'L';
+            closeWaterModal();
+        }
+
+        function updateSleepDetailed() {
+            const val = parseFloat(document.getElementById('input-sleep-hours').value);
+            if (!isNaN(val)) {
+                currentSleep = val;
+                document.getElementById('dashboard-sleep').innerText = currentSleep + 'h';
+                document.getElementById('sleep-badge').innerText = currentSleep + ' Hours';
+                alert('Sleep log updated successfully!');
+                switchTab('home');
+            }
+        }
+
+        function filterWorkouts(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+                if (btn.innerText === category) {
+                    btn.classList.add('bg-emerald-600', 'text-white');
+                    btn.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+                }
+            });
+
+            const container = document.getElementById('workout-list');
+            const filtered = category === 'All' ? workoutDatabase : workoutDatabase.filter(w => w.category === category);
+
+            let html = '';
+            filtered.forEach(workout => {
+                html += `
+                    <div onclick="openWorkoutModal(${workout.id})" class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center shadow-sm hover:border-blue-300 transition cursor-pointer">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">${workout.category}</span>
+                            <h5 class="text-sm font-semibold text-slate-800 dark:text-white mt-1">${workout.title}</h5>
+                            <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">${workout.duration} • ${workout.calories} kcal burn</p>
+                        </div>
+                        <button onclick="event.stopPropagation(); logCompletedWorkout('${workout.title.replace(/'/g, "\\'")}', ${workout.calories})" class="bg-slate-900 dark:bg-slate-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg hover:bg-slate-800 transition">Complete</button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        function openWorkoutModal(workoutId) {
+            const workout = workoutDatabase.find(w => w.id === workoutId);
+            if (!workout) return;
+
+            document.getElementById('workout-modal-title').innerText = workout.title;
+            document.getElementById('workout-modal-cat').innerText = workout.category;
+            document.getElementById('workout-modal-duration').innerText = workout.duration;
+            document.getElementById('workout-modal-burn').innerText = `${workout.calories} kcal`;
+            document.getElementById('workout-modal-level').innerText = workout.level;
+
+            let exHtml = '';
+            workout.exercises.forEach((ex, idx) => {
+                exHtml += `
+                    <div class="bg-slate-50 dark:bg-slate-700 p-3.5 rounded-xl border border-slate-100 dark:border-slate-600 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h5 class="text-xs font-bold text-slate-800 dark:text-white">${idx + 1}. ${ex.name}</h5>
+                            <span class="text-[10px] font-semibold text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-900 px-2 py-0.5 rounded">${ex.sets}</span>
+                        </div>
+                        <div class="w-full bg-slate-900 h-32 rounded-lg overflow-hidden flex flex-col items-center justify-center relative shadow-inner">
+                            <div class="animate-pulse-custom flex flex-col items-center justify-center space-y-2">
+                                <i data-lucide="${ex.icon}" class="w-10 h-10 ${ex.color}"></i>
+                                <span class="text-[10px] font-medium tracking-widest text-slate-300 uppercase">Live Simulation Active</span>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-slate-500 dark:text-slate-300">💡 <strong>Form Tip:</strong> ${ex.tip}</p>
+                    </div>
+                `;
+            });
+            document.getElementById('workout-modal-exercises').innerHTML = exHtml;
+            document.getElementById('workout-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeWorkoutModal() { document.getElementById('workout-modal').classList.add('hidden'); }
+
+        function logCompletedWorkout(title, calories) {
+            completedWorkouts.push({ title, calories });
+            renderCompletedWorkouts();
+        }
+
+        function removeCompletedWorkout(index) {
+            completedWorkouts.splice(index, 1);
+            renderCompletedWorkouts();
+        }
+
+        function renderCompletedWorkouts() {
+            const container = document.getElementById('completed-workout-list');
+            const countBadge = document.getElementById('workout-count');
+
+            if (completedWorkouts.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">No workouts completed yet today. Let's crush one!</div>`;
+                countBadge.innerText = '0 Completed';
+                return;
+            }
+
+            let html = '';
+            completedWorkouts.forEach((w, index) => {
+                html += `
+                    <div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-xl flex justify-between items-center shadow-sm">
+                        <div>
+                            <h5 class="text-xs font-semibold text-slate-800 dark:text-white">✅ ${w.title}</h5>
+                            <span class="text-[10px] text-orange-500 font-semibold">${w.calories} kcal burned</span>
+                        </div>
+                        <button onclick="removeCompletedWorkout(${index})" class="text-slate-400 hover:text-red-500 transition"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            countBadge.innerText = `${completedWorkouts.length} Completed`;
             lucide.createIcons();
         }
     </script>
