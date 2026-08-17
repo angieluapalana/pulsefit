@@ -45,661 +45,706 @@
     <!-- Strict Mobile Viewport Container -->
     <div class="w-full sm:max-w-[390px] h-screen sm:h-[844px] bg-white dark:bg-slate-900 sm:rounded-[40px] sm:border-8 sm:border-slate-800 shadow-2xl flex flex-col overflow-hidden relative transition-colors duration-200">
         
-        <!-- App Header (Sticky) -->
-        <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800 shrink-0 transition-colors duration-200">
-            <div>
-                <h1 class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">PulseFit</h1>
-                <h2 id="header-title" class="text-xl font-bold text-slate-800 dark:text-white">Today's Overview</h2>
-            </div>
-            <button onclick="switchTab('settings')" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition overflow-hidden border border-slate-200 dark:border-slate-700">
-                <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-full h-full object-cover">
-            </button>
-        </header>
-
-        <!-- Main Scrollable Content Area -->
-        <main class="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
-            
-            <!-- SCREEN 1: HOME DASHBOARD -->
-            <div id="screen-home" class="screen active flex-col space-y-6">
-                <!-- Welcome Banner with Weight Progress -->
-                <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
-                    <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
-                        <span>⚖️</span>
-                        <span id="weight-status-badge">Goal: 65 kg</span>
-                    </div>
-                    <p class="text-emerald-100 text-sm font-medium">Welcome back, <span id="welcome-name">Alex</span>!</p>
-                    <h3 class="text-lg font-bold mt-1 leading-snug" id="weight-banner-text">You are <span id="weight-remaining">3.5 kg</span> away from your target weight.</h3>
-                    <div class="mt-4 w-full bg-emerald-900/30 rounded-full h-2">
-                        <div id="weight-progress-bar" class="bg-white h-2 rounded-full w-1/2"></div>
-                    </div>
+        <!-- AUTH SCREEN (Shown when logged out) -->
+        <div id="screen-auth" class="screen active flex-col justify-center p-6 h-full space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                    <i data-lucide="activity" class="w-8 h-8"></i>
                 </div>
+                <h1 class="text-2xl font-bold text-slate-800 dark:text-white">Welcome to PulseFit</h1>
+                <p id="auth-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Sign in to sync your health data to the cloud.</p>
+            </div>
 
-                <!-- Daily Trackers Grid -->
+            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-4 shadow-sm">
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Live Chart Trend)</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div onclick="openTrendModal('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
-                            <div class="flex items-center text-blue-600 dark:text-blue-400 space-x-2">
-                                <i data-lucide="footprints" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Steps 👟</span>
-                            </div>
-                            <div class="mt-4">
-                                <span id="dashboard-steps" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
-                                <span id="goal-steps-display" class="text-xs text-blue-600 dark:text-blue-400 font-semibold block">/ 10,000 goal</span>
-                            </div>
-                        </div>
-
-                        <div onclick="openTrendModal('calories')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-orange-300 transition">
-                            <div class="flex items-center text-orange-500 dark:text-orange-400 space-x-2">
-                                <i data-lucide="flame" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Calories 🔥</span>
-                            </div>
-                            <div class="mt-4">
-                                <span id="dashboard-calories" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
-                                <span class="text-xs text-slate-400 dark:text-slate-500 block">kcal logged</span>
-                            </div>
-                        </div>
-
-                        <div onclick="openWaterModal()" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-cyan-300 transition">
-                            <div class="flex items-center text-cyan-500 dark:text-cyan-400 space-x-2">
-                                <i data-lucide="droplet" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Water 💧</span>
-                            </div>
-                            <div class="mt-4">
-                                <span id="dashboard-water" class="text-2xl font-bold text-slate-800 dark:text-white">0.0L</span>
-                                <span id="goal-water-display" class="text-xs text-cyan-600 dark:text-cyan-400 font-semibold block">/ 3.0L goal</span>
-                            </div>
-                        </div>
-
-                        <div onclick="openTrendModal('sleep')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition">
-                            <div class="flex items-center text-indigo-500 dark:text-indigo-400 space-x-2">
-                                <i data-lucide="moon" class="w-5 h-5"></i>
-                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sleep 🌙</span>
-                            </div>
-                            <div class="mt-4">
-                                <span id="dashboard-sleep" class="text-2xl font-bold text-slate-800 dark:text-white">0.0h</span>
-                                <span id="goal-sleep-display" class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold block">/ 8.0h goal</span>
-                            </div>
-                        </div>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Email Address</label>
+                    <input type="email" id="auth-email" placeholder="alex@example.com" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-
-                <!-- Macro Summary Bar -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl">
-                    <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Today's Nutrition Breakdown</h3>
-                    <div class="grid grid-cols-2 gap-4 text-center">
-                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Protein</span>
-                            <span id="dashboard-protein" class="text-lg font-bold text-emerald-600 dark:text-emerald-400">0g</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Fiber</span>
-                            <span id="dashboard-fiber" class="text-lg font-bold text-blue-600 dark:text-blue-400">0g</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
                 <div>
-                    <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Quick Actions</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="switchTab('meals')" class="flex items-center justify-center space-x-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold py-3.5 px-4 rounded-xl border border-emerald-100 dark:border-emerald-800 hover:bg-emerald-100 transition">
-                            <i data-lucide="utensils" class="w-4 h-4"></i>
-                            <span class="text-sm">Log Meal</span>
-                        </button>
-                        <button onclick="switchTab('workouts')" class="flex items-center justify-center space-x-2 bg-slate-900 dark:bg-slate-700 text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm">
-                            <i data-lucide="dumbbell" class="w-4 h-4"></i>
-                            <span class="text-sm">Workout</span>
-                        </button>
-                    </div>
+                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
                 </div>
-            </div>
-
-            <!-- SCREEN 2: SMART MEAL PLAN CREATOR & COMMUNITY RECIPES -->
-            <div id="screen-meals" class="screen flex-col space-y-6">
-                <div class="bg-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Community Meal Planner</h3>
-                    <p class="text-xs text-slate-400 mt-1">Search official PulseFit recipes or publish your own cooked meals!</p>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Share Your Cooked Recipe</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Recipe / Meal Name</label>
-                        <input type="text" id="custom-meal-name" placeholder="e.g., Mom's Garlic Beef & Rice" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (grams)</label>
-                            <input type="number" id="custom-meal-weight" placeholder="e.g., 350" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Calories (kcal)</label>
-                            <input type="number" id="custom-meal-cals" placeholder="e.g., 520" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Protein (g)</label>
-                            <input type="number" id="custom-meal-protein" placeholder="e.g., 38" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fiber (g)</label>
-                            <input type="number" id="custom-meal-fiber" placeholder="e.g., 5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                        </div>
-                    </div>
-                    <button onclick="publishCustomRecipe()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
-                        Publish to Community Database
-                    </button>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Search Recipes</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Meal Slot</label>
-                        <select id="meal-type" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
-                            <option value="Breakfast">Breakfast</option>
-                            <option value="Lunch">Lunch</option>
-                            <option value="Dinner">Dinner</option>
-                            <option value="Snack">Snack</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Search Keywords (Ingredients / Name)</label>
-                        <input type="text" id="ingredient-input" placeholder="e.g., chicken, beef, egg" oninput="findSuggestions()" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Matching Recipes</h4>
-                    <div id="suggestions-list" class="space-y-2">
-                        <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                            Start typing above to search recipes!
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Logged Meals</h4>
-                        <span id="total-calories" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">Total: 0 kcal</span>
-                    </div>
-                    <div id="meal-list" class="space-y-2">
-                        <div id="empty-state" class="text-center py-6 text-slate-400 text-xs">
-                            No meals added to your daily tracker yet.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 3: WORKOUT ROUTINES -->
-            <div id="screen-workouts" class="screen flex-col space-y-6">
-                <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Pro-Builder Workout Routines</h3>
-                    <p class="text-xs text-slate-300 mt-1">Tap any routine to view animated simulation previews and form tips.</p>
-                </div>
-
-                <div class="flex space-x-2 overflow-x-auto pb-1">
-                    <button onclick="filterWorkouts('All')" class="category-btn bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition">All</button>
-                    <button onclick="filterWorkouts('HIIT')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">HIIT</button>
-                    <button onclick="filterWorkouts('Strength')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Strength</button>
-                    <button onclick="filterWorkouts('Core')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Core</button>
-                    <button onclick="filterWorkouts('Recovery')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Recovery</button>
-                </div>
-
-                <div id="workout-list" class="space-y-3"></div>
-
-                <div>
-                    <div class="flex justify-between items-center mb-3">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Completed Workouts Today</h4>
-                        <span id="workout-count" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">0 Completed</span>
-                    </div>
-                    <div id="completed-workout-list" class="space-y-2">
-                        <div id="empty-workout-state" class="text-center py-6 text-slate-400 text-xs">
-                            No workouts completed yet today. Let's crush one!
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 5: STEP COUNTER & HEALTH SYNC MODULE -->
-            <div id="screen-steps" class="screen flex-col space-y-6">
-                <div class="bg-gradient-to-br from-blue-600 to-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Step Counter & Health Sync 👟</h3>
-                    <p class="text-xs text-slate-200 mt-1">Log daily steps or sync with Apple / Samsung Health wearables.</p>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Step Progress</h4>
-                        <span id="steps-percentage" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-full">0%</span>
-                    </div>
-
-                    <div class="grid grid-cols-3 gap-2 text-center pt-2">
-                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Distance</span>
-                            <strong id="steps-distance" class="text-sm font-bold text-slate-800 dark:text-white">0.0 km</strong>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Active Time</span>
-                            <strong id="steps-time" class="text-sm font-bold text-slate-800 dark:text-white">0h 00m</strong>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span>
-                            <strong id="steps-burn" class="text-sm font-bold text-orange-500">0 kcal</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Log Steps with Date Picker & Manual Input -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Manual Input & Date 📅</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
-                        <input type="date" id="step-log-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">How many steps?</label>
-                        <input type="number" id="input-add-steps" placeholder="e.g., 6500" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <button onclick="logExtraSteps()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm text-xs">
-                        Save Step Log
-                    </button>
-                </div>
-
-                <!-- Health Tracker Sync Buttons -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Sync Wearable Device</h4>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="syncHealthTracker('Apple')" class="flex items-center justify-center space-x-2 bg-black text-white py-3 rounded-xl text-xs font-semibold hover:bg-slate-800 transition shadow-sm">
-                            <span> Apple Health</span>
-                        </button>
-                        <button onclick="syncHealthTracker('Samsung')" class="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 rounded-xl text-xs font-semibold hover:bg-blue-700 transition shadow-sm">
-                            <span>⌚ Samsung Health</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 6: SLEEP RECOVERY MODULE -->
-            <div id="screen-sleep" class="screen flex-col space-y-6">
-                <div class="bg-gradient-to-br from-indigo-600 to-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Sleep & Recovery Insights 🌙</h3>
-                    <p class="text-xs text-slate-200 mt-1">Log restfulness and hours slept for deep recovery tracking.</p>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Last Night's Sleep</h4>
-                        <span id="sleep-badge" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-full">0.0 Hours</span>
-                    </div>
-
-                    <div class="space-y-2 pt-2">
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                <span>Deep Sleep (25%)</span>
-                                <span id="deep-sleep-time">0h 00m</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div id="deep-sleep-bar" class="bg-indigo-600 h-2 rounded-full w-0"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                <span>REM Sleep (20%)</span>
-                                <span id="rem-sleep-time">0h 00m</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div id="rem-sleep-bar" class="bg-blue-500 h-2 rounded-full w-0"></div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
-                                <span>Light Sleep (55%)</span>
-                                <span id="light-sleep-time">0h 00m</span>
-                            </div>
-                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
-                                <div id="light-sleep-bar" class="bg-cyan-500 h-2 rounded-full w-0"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Log Sleep with Date Picker & Manual Input -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Manual Input & Date 📅</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
-                        <input type="date" id="sleep-log-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">How many hours?</label>
-                        <input type="number" id="input-sleep-hours" step="0.5" placeholder="e.g., 7.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
-                    </div>
-                    <button onclick="updateSleepDetailed()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
-                        Save Sleep Log
-                    </button>
-                </div>
-            </div>
-
-            <!-- SCREEN 7: PEPTIDE / INSULIN THERAPY TRACKER -->
-            <div id="screen-therapy" class="screen flex-col space-y-6">
-                <div class="bg-gradient-to-br from-purple-600 to-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Peptide & Injection Tracker 💉</h3>
-                    <p class="text-xs text-slate-200 mt-1">Log injection schedules, units, and corresponding body weight.</p>
-                </div>
-
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log New Injection</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
-                        <input type="date" id="inj-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Units (IU / mg)</label>
-                            <input type="number" step="0.1" id="inj-units" placeholder="e.g., 2.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (kg / lbs)</label>
-                            <input type="text" id="inj-weight" placeholder="e.g., 78 kg" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
-                        </div>
-                    </div>
-                    <button onclick="logInjection()" class="w-full bg-purple-600 text-white font-semibold py-2.5 rounded-xl hover:bg-purple-700 transition shadow-sm text-xs">
-                        Save Injection Log
-                    </button>
-                </div>
-
-                <div>
-                    <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Injection History</h4>
-                    <div id="injection-list" class="space-y-2">
-                        <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-                            No injections logged yet.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SCREEN 4: SETTINGS & PERSONALIZATION -->
-            <div id="screen-settings" class="screen flex-col space-y-6">
-                <div class="bg-slate-900 p-5 rounded-2xl text-white">
-                    <h3 class="text-base font-bold">Profile & Settings</h3>
-                    <p class="text-xs text-slate-400 mt-1">Personalize your profile, appearance theme, and weight targets.</p>
-                </div>
-
-                <!-- Feature Toggles -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Feature Modules</h4>
-                    <div class="flex justify-between items-center py-1">
-                        <div>
-                            <h5 class="text-xs font-semibold text-slate-800 dark:text-white">Peptide & Injection Tracker</h5>
-                            <p class="text-[10px] text-slate-400">Show injection logging on bottom bar</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="toggle-therapy" onchange="toggleTherapyNav(this)" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Weight Targets Form -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Weight Targets & Logging ⚖️</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Current Weight (kg)</label>
-                        <input type="number" step="0.1" id="input-current-weight" value="68.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Weight (kg)</label>
-                        <input type="number" step="0.1" id="input-target-weight" value="65.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <button onclick="saveWeightGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
-                        Update Weight Goals
-                    </button>
-                </div>
-
-                <!-- Daily Summary & Export Card -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Health Summary Report 📊</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Generate a comprehensive summary report across custom date ranges.</p>
-                    <button onclick="openSummaryModal()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
-                        View Date-Range Summary Report
-                    </button>
-                </div>
-
-                <!-- Achievement Badges Card -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Unlocked Badges 🏆</h4>
-                    <div class="grid grid-cols-3 gap-2 text-center">
-                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-2xl block mb-1">🔥</span>
-                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Starter Badge</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-2xl block mb-1">💧</span>
-                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Hydration Ready</span>
-                        </div>
-                        <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
-                            <span class="text-2xl block mb-1">🥗</span>
-                            <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Chef Creator</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Profile Customization Form -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Profile Information</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Display Name</label>
-                        <input type="text" id="input-profile-name" value="Alex" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Profile Photo Upload</label>
-                        <input type="file" id="input-profile-file" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950 dark:file:text-emerald-300 hover:file:bg-emerald-100 cursor-pointer">
-                    </div>
-                    <button onclick="saveProfile()" class="w-full bg-slate-900 dark:bg-slate-700 text-white font-semibold py-2.5 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm text-xs">
-                        Update Profile
-                    </button>
-                </div>
-
-                <!-- Theme Toggle -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Appearance Theme</h4>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button onclick="setTheme('light')" id="theme-btn-light" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Light</button>
-                        <button onclick="setTheme('dark')" id="theme-btn-dark" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Dark</button>
-                        <button onclick="setTheme('system')" id="theme-btn-system" class="bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">System</button>
-                    </div>
-                </div>
-
-                <!-- Goals Form -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Set Daily Targets</h4>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Step Goal</label>
-                        <input type="number" id="input-goal-steps" value="10000" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Water Goal (Liters)</label>
-                        <input type="number" id="input-goal-water" step="0.5" value="3.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Sleep Goal (Hours)</label>
-                        <input type="number" id="input-goal-sleep" step="0.5" value="8.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <button onclick="saveGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
-                        Save Goals
-                    </button>
-                </div>
-
-                <!-- Cloud Sync Options -->
-                <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-4 text-center">
-                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-1">
-                        <i data-lucide="cloud" class="w-6 h-6"></i>
-                    </div>
-                    <h4 class="text-sm font-bold text-slate-800 dark:text-white">Supabase Cloud Sync</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400">Backup your daily logs across devices securely.</p>
-                    
-                    <div class="space-y-2 pt-1">
-                        <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition shadow-sm">
-                            <i data-lucide="chrome" class="w-4 h-4 text-blue-500"></i>
-                            <span>Sign in with Google</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-        </main>
-
-        <!-- Single-Line Chart Trend & History Modal -->
-        <div id="trend-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white dark:bg-slate-800 dark:text-white h-[65%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 id="trend-modal-title" class="text-base font-bold text-slate-800 dark:text-white">7-Day Line Trend</h3>
-                    <button onclick="closeTrendModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                <p id="trend-modal-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Weekly progress single-line chart.</p>
                 
-                <!-- SVG Line Chart Container -->
-                <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 flex flex-col items-center justify-center relative">
-                    <svg id="trend-svg-chart" class="w-full h-36 overflow-visible" viewBox="0 0 300 100">
-                        <!-- Rendered via JavaScript -->
-                    </svg>
-                    <div id="trend-chart-labels" class="flex justify-between w-full text-[10px] text-slate-400 dark:text-slate-400 mt-2 px-1">
-                        <!-- Day labels -->
-                    </div>
+                <button id="auth-submit-btn" onclick="handleEmailAuth()" class="w-full bg-emerald-600 text-white font-semibold py-3 rounded-xl hover:bg-emerald-700 transition shadow-sm text-sm">
+                    Sign In
+                </button>
+
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                    <span class="flex-shrink mx-4 text-[10px] uppercase font-bold text-slate-400">Or</span>
+                    <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
                 </div>
 
-                <div id="trend-list-container" class="space-y-2 overflow-y-auto flex-1 pr-1">
-                    <!-- Detailed values -->
-                </div>
+                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 py-3 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 transition shadow-sm">
+                    <i data-lucide="chrome" class="w-4 h-4 text-blue-500"></i>
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+
+            <div class="text-center">
+                <button onclick="toggleAuthMode()" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+                    <span id="auth-toggle-text">Don't have an account? Sign Up</span>
+                </button>
             </div>
         </div>
 
-        <!-- Water Modal with Custom Date & Amount Log -->
-        <div id="water-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white dark:bg-slate-800 dark:text-white w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-base font-bold text-slate-800 dark:text-white">Log Water Intake 💧</h3>
-                    <button onclick="closeWaterModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
+        <!-- MAIN APP CONTAINER (Hidden until authenticated) -->
+        <div id="main-app-container" class="hidden flex-col h-full overflow-hidden relative">
+            <!-- App Header (Sticky) -->
+            <header class="px-6 pt-6 pb-4 flex justify-between items-center bg-white dark:bg-slate-900 sticky top-0 z-20 border-b border-slate-100 dark:border-slate-800 shrink-0 transition-colors duration-200">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
-                    <input type="date" id="water-log-date" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm">
+                    <h1 class="text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">PulseFit</h1>
+                    <h2 id="header-title" class="text-xl font-bold text-slate-800 dark:text-white">Today's Overview</h2>
                 </div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Add a glass (+250ml / +500ml) or custom amount.</p>
-                <div class="flex space-x-3">
-                    <button onclick="addWater(250)" class="flex-1 bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-100 dark:border-cyan-800 py-3 rounded-xl font-semibold text-xs hover:bg-cyan-100 transition">+ 250 ml</button>
-                    <button onclick="addWater(500)" class="flex-1 bg-cyan-600 text-white py-3 rounded-xl font-semibold text-xs hover:bg-cyan-700 transition shadow-sm">+ 500 ml</button>
-                </div>
-            </div>
-        </div>
+                <button onclick="switchTab('settings')" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition overflow-hidden border border-slate-200 dark:border-slate-700">
+                    <img id="header-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar" class="w-full h-full object-cover">
+                </button>
+            </header>
 
-        <!-- Date-Range Summary Report Modal -->
-        <div id="summary-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
-                <button onclick="closeSummaryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <div class="overflow-y-auto space-y-4 pr-1">
-                    <div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">Analytics Report</span>
-                        <h3 class="text-lg font-bold text-slate-800 dark:text-white mt-1">Date-Range Health Summary</h3>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">Start Date</label>
-                            <input type="date" id="report-start" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+            <!-- Main Scrollable Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 space-y-6 pb-28">
+                
+                <!-- SCREEN 1: HOME DASHBOARD -->
+                <div id="screen-home" class="screen active flex-col space-y-6">
+                    <!-- Welcome Banner with Weight Progress -->
+                    <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
+                        <div class="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold flex items-center space-x-1">
+                            <span>⚖️</span>
+                            <span id="weight-status-badge">Goal: 65 kg</span>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-semibold text-slate-500 mb-1">End Date</label>
-                            <input type="date" id="report-end" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+                        <p class="text-emerald-100 text-sm font-medium">Welcome back, <span id="welcome-name">Alex</span>!</p>
+                        <h3 class="text-lg font-bold mt-1 leading-snug" id="weight-banner-text">You are <span id="weight-remaining">3.5 kg</span> away from your target weight.</h3>
+                        <div class="mt-4 w-full bg-emerald-900/30 rounded-full h-2">
+                            <div id="weight-progress-bar" class="bg-white h-2 rounded-full w-1/2"></div>
                         </div>
                     </div>
-                    <button onclick="generateDateRangeReport()" class="w-full bg-indigo-600 text-white font-semibold py-2 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
-                        Generate Report
-                    </button>
-                    <div id="summary-content" class="bg-slate-50 dark:bg-slate-700 p-4 rounded-xl text-xs space-y-2">
-                        <p class="text-slate-400 text-center">Select date range and click generate.</p>
+
+                    <!-- Daily Trackers Grid -->
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Daily Trackers (Tap for Live Chart Trend)</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div onclick="openTrendModal('steps')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-300 transition">
+                                <div class="flex items-center text-blue-600 dark:text-blue-400 space-x-2">
+                                    <i data-lucide="footprints" class="w-5 h-5"></i>
+                                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Steps 👟</span>
+                                </div>
+                                <div class="mt-4">
+                                    <span id="dashboard-steps" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
+                                    <span id="goal-steps-display" class="text-xs text-blue-600 dark:text-blue-400 font-semibold block">/ 10,000 goal</span>
+                                </div>
+                            </div>
+
+                            <div onclick="openTrendModal('calories')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-orange-300 transition">
+                                <div class="flex items-center text-orange-500 dark:text-orange-400 space-x-2">
+                                    <i data-lucide="flame" class="w-5 h-5"></i>
+                                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Calories 🔥</span>
+                                </div>
+                                <div class="mt-4">
+                                    <span id="dashboard-calories" class="text-2xl font-bold text-slate-800 dark:text-white">0</span>
+                                    <span class="text-xs text-slate-400 dark:text-slate-500 block">kcal logged</span>
+                                </div>
+                            </div>
+
+                            <div onclick="openWaterModal()" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-cyan-300 transition">
+                                <div class="flex items-center text-cyan-500 dark:text-cyan-400 space-x-2">
+                                    <i data-lucide="droplet" class="w-5 h-5"></i>
+                                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Water 💧</span>
+                                </div>
+                                <div class="mt-4">
+                                    <span id="dashboard-water" class="text-2xl font-bold text-slate-800 dark:text-white">0.0L</span>
+                                    <span id="goal-water-display" class="text-xs text-cyan-600 dark:text-cyan-400 font-semibold block">/ 3.0L goal</span>
+                                </div>
+                            </div>
+
+                            <div onclick="openTrendModal('sleep')" class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-indigo-300 transition">
+                                <div class="flex items-center text-indigo-500 dark:text-indigo-400 space-x-2">
+                                    <i data-lucide="moon" class="w-5 h-5"></i>
+                                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sleep 🌙</span>
+                                </div>
+                                <div class="mt-4">
+                                    <span id="dashboard-sleep" class="text-2xl font-bold text-slate-800 dark:text-white">0.0h</span>
+                                    <span id="goal-sleep-display" class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold block">/ 8.0h goal</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="alert('Report exported successfully!')" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
-                        Export Report File
-                    </button>
+
+                    <!-- Macro Summary Bar -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl">
+                        <h3 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Today's Nutrition Breakdown</h3>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Protein</span>
+                                <span id="dashboard-protein" class="text-lg font-bold text-emerald-600 dark:text-emerald-400">0g</span>
+                            </div>
+                            <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-xs text-slate-400 dark:text-slate-300 block">Total Fiber</span>
+                                <span id="dashboard-fiber" class="text-lg font-bold text-blue-600 dark:text-blue-400">0g</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white mb-3">Quick Actions</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="switchTab('meals')" class="flex items-center justify-center space-x-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 font-semibold py-3.5 px-4 rounded-xl border border-emerald-100 dark:border-emerald-800 hover:bg-emerald-100 transition">
+                                <i data-lucide="utensils" class="w-4 h-4"></i>
+                                <span class="text-sm">Log Meal</span>
+                            </button>
+                            <button onclick="switchTab('workouts')" class="flex items-center justify-center space-x-2 bg-slate-900 dark:bg-slate-700 text-white font-semibold py-3.5 px-4 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm">
+                                <i data-lucide="dumbbell" class="w-4 h-4"></i>
+                                <span class="text-sm">Workout</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 2: SMART MEAL PLAN CREATOR & COMMUNITY RECIPES -->
+                <div id="screen-meals" class="screen flex-col space-y-6">
+                    <div class="bg-slate-900 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Community Meal Planner</h3>
+                        <p class="text-xs text-slate-400 mt-1">Search official PulseFit recipes or publish your own cooked meals!</p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Share Your Cooked Recipe</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Recipe / Meal Name</label>
+                            <input type="text" id="custom-meal-name" placeholder="e.g., Mom's Garlic Beef & Rice" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (grams)</label>
+                                <input type="number" id="custom-meal-weight" placeholder="e.g., 350" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Calories (kcal)</label>
+                                <input type="number" id="custom-meal-cals" placeholder="e.g., 520" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Protein (g)</label>
+                                <input type="number" id="custom-meal-protein" placeholder="e.g., 38" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Fiber (g)</label>
+                                <input type="number" id="custom-meal-fiber" placeholder="e.g., 5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+                        <button onclick="publishCustomRecipe()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                            Publish to Community Database
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Search Recipes</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Meal Slot</label>
+                            <select id="meal-type" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Search Keywords (Ingredients / Name)</label>
+                            <input type="text" id="ingredient-input" placeholder="e.g., chicken, beef, egg" oninput="findSuggestions()" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Matching Recipes</h4>
+                        <div id="suggestions-list" class="space-y-2">
+                            <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                                Start typing above to search recipes!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Logged Meals</h4>
+                            <span id="total-calories" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">Total: 0 kcal</span>
+                        </div>
+                        <div id="meal-list" class="space-y-2">
+                            <div id="empty-state" class="text-center py-6 text-slate-400 text-xs">
+                                No meals added to your daily tracker yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 3: WORKOUT ROUTINES -->
+                <div id="screen-workouts" class="screen flex-col space-y-6">
+                    <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Pro-Builder Workout Routines</h3>
+                        <p class="text-xs text-slate-300 mt-1">Tap any routine to view animated simulation previews and form tips.</p>
+                    </div>
+
+                    <div class="flex space-x-2 overflow-x-auto pb-1">
+                        <button onclick="filterWorkouts('All')" class="category-btn bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition">All</button>
+                        <button onclick="filterWorkouts('HIIT')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">HIIT</button>
+                        <button onclick="filterWorkouts('Strength')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Strength</button>
+                        <button onclick="filterWorkouts('Core')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Core</button>
+                        <button onclick="filterWorkouts('Recovery')" class="category-btn bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-semibold px-3 py-1.5 rounded-full shrink-0 transition hover:bg-slate-200">Recovery</button>
+                    </div>
+
+                    <div id="workout-list" class="space-y-3"></div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white">Completed Workouts Today</h4>
+                            <span id="workout-count" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-full">0 Completed</span>
+                        </div>
+                        <div id="completed-workout-list" class="space-y-2">
+                            <div id="empty-workout-state" class="text-center py-6 text-slate-400 text-xs">
+                                No workouts completed yet today. Let's crush one!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 5: STEP COUNTER & HEALTH SYNC MODULE -->
+                <div id="screen-steps" class="screen flex-col space-y-6">
+                    <div class="bg-gradient-to-br from-blue-600 to-slate-900 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Step Counter & Health Sync 👟</h3>
+                        <p class="text-xs text-slate-200 mt-1">Log daily steps or sync with Apple / Samsung Health wearables.</p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white">Today's Step Progress</h4>
+                            <span id="steps-percentage" class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-full">0%</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center pt-2">
+                            <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Distance</span>
+                                <strong id="steps-distance" class="text-sm font-bold text-slate-800 dark:text-white">0.0 km</strong>
+                            </div>
+                            <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Active Time</span>
+                                <strong id="steps-time" class="text-sm font-bold text-slate-800 dark:text-white">0h 00m</strong>
+                            </div>
+                            <div class="bg-white dark:bg-slate-700 p-3 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span>
+                                <strong id="steps-burn" class="text-sm font-bold text-orange-500">0 kcal</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Steps with Date Picker & Manual Input -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Manual Input & Date 📅</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
+                            <input type="date" id="step-log-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">How many steps?</label>
+                            <input type="number" id="input-add-steps" placeholder="e.g., 6500" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        </div>
+                        <button onclick="logExtraSteps()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-700 transition shadow-sm text-xs">
+                            Save Step Log
+                        </button>
+                    </div>
+
+                    <!-- Health Tracker Sync Buttons -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Sync Wearable Device</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="syncHealthTracker('Apple')" class="flex items-center justify-center space-x-2 bg-black text-white py-3 rounded-xl text-xs font-semibold hover:bg-slate-800 transition shadow-sm">
+                                <span> Apple Health</span>
+                            </button>
+                            <button onclick="syncHealthTracker('Samsung')" class="flex items-center justify-center space-x-2 bg-blue-600 text-white py-3 rounded-xl text-xs font-semibold hover:bg-blue-700 transition shadow-sm">
+                                <span>⌚ Samsung Health</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 6: SLEEP RECOVERY MODULE -->
+                <div id="screen-sleep" class="screen flex-col space-y-6">
+                    <div class="bg-gradient-to-br from-indigo-600 to-slate-900 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Sleep & Recovery Insights 🌙</h3>
+                        <p class="text-xs text-slate-200 mt-1">Log restfulness and hours slept for deep recovery tracking.</p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-white">Last Night's Sleep</h4>
+                            <span id="sleep-badge" class="text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2.5 py-1 rounded-full">0.0 Hours</span>
+                        </div>
+
+                        <div class="space-y-2 pt-2">
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    <span>Deep Sleep (25%)</span>
+                                    <span id="deep-sleep-time">0h 00m</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div id="deep-sleep-bar" class="bg-indigo-600 h-2 rounded-full w-0"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    <span>REM Sleep (20%)</span>
+                                    <span id="rem-sleep-time">0h 00m</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div id="rem-sleep-bar" class="bg-blue-500 h-2 rounded-full w-0"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">
+                                    <span>Light Sleep (55%)</span>
+                                    <span id="light-sleep-time">0h 00m</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div id="light-sleep-bar" class="bg-cyan-500 h-2 rounded-full w-0"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Sleep with Date Picker & Manual Input -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Manual Input & Date 📅</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
+                            <input type="date" id="sleep-log-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">How many hours?</label>
+                            <input type="number" id="input-sleep-hours" step="0.5" placeholder="e.g., 7.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <button onclick="updateSleepDetailed()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                            Save Sleep Log
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SCREEN 7: PEPTIDE / INSULIN THERAPY TRACKER -->
+                <div id="screen-therapy" class="screen flex-col space-y-6">
+                    <div class="bg-gradient-to-br from-purple-600 to-slate-900 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Peptide & Injection Tracker 💉</h3>
+                        <p class="text-xs text-slate-200 mt-1">Log injection schedules, units, and corresponding body weight.</p>
+                    </div>
+
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Log New Injection</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
+                            <input type="date" id="inj-date" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Units (IU / mg)</label>
+                                <input type="number" step="0.1" id="inj-units" placeholder="e.g., 2.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Weight (kg / lbs)</label>
+                                <input type="text" id="inj-weight" placeholder="e.g., 78 kg" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-purple-500">
+                            </div>
+                        </div>
+                        <button onclick="logInjection()" class="w-full bg-purple-600 text-white font-semibold py-2.5 rounded-xl hover:bg-purple-700 transition shadow-sm text-xs">
+                            Save Injection Log
+                        </button>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white mb-2">Injection History</h4>
+                        <div id="injection-list" class="space-y-2">
+                            <div class="text-center py-6 text-slate-400 text-xs bg-slate-50 dark:bg-slate-800 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                                No injections logged yet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCREEN 4: SETTINGS & PERSONALIZATION -->
+                <div id="screen-settings" class="screen flex-col space-y-6">
+                    <div class="bg-slate-900 p-5 rounded-2xl text-white">
+                        <h3 class="text-base font-bold">Profile & Settings</h3>
+                        <p class="text-xs text-slate-400 mt-1">Personalize your profile, appearance theme, and weight targets.</p>
+                    </div>
+
+                    <!-- Feature Toggles -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Feature Modules</h4>
+                        <div class="flex justify-between items-center py-1">
+                            <div>
+                                <h5 class="text-xs font-semibold text-slate-800 dark:text-white">Peptide & Injection Tracker</h5>
+                                <p class="text-[10px] text-slate-400">Show injection logging on bottom bar</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="toggle-therapy" onchange="toggleTherapyNav(this)" class="sr-only peer">
+                                <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-purple-600"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Weight Targets Form -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Weight Targets & Logging ⚖️</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Current Weight (kg)</label>
+                            <input type="number" step="0.1" id="input-current-weight" value="68.5" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Target Weight (kg)</label>
+                            <input type="number" step="0.1" id="input-target-weight" value="65.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <button onclick="saveWeightGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                            Update Weight Goals
+                        </button>
+                    </div>
+
+                    <!-- Daily Summary & Export Card -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Health Summary Report 📊</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Generate a comprehensive summary report across custom date ranges.</p>
+                        <button onclick="openSummaryModal()" class="w-full bg-indigo-600 text-white font-semibold py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                            View Date-Range Summary Report
+                        </button>
+                    </div>
+
+                    <!-- Achievement Badges Card -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Unlocked Badges 🏆</h4>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-2xl block mb-1">🔥</span>
+                                <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Starter Badge</span>
+                            </div>
+                            <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-2xl block mb-1">💧</span>
+                                <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Hydration Ready</span>
+                            </div>
+                            <div class="bg-white dark:bg-slate-700 p-2.5 rounded-xl border border-slate-100 dark:border-slate-600">
+                                <span class="text-2xl block mb-1">🥗</span>
+                                <span class="text-[10px] font-bold text-slate-800 dark:text-white block">Chef Creator</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Customization Form -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Profile Information</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Display Name</label>
+                            <input type="text" id="input-profile-name" value="Alex" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Profile Photo Upload</label>
+                            <input type="file" id="input-profile-file" accept="image/*" onchange="handleImageUpload(event)" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950 dark:file:text-emerald-300 hover:file:bg-emerald-100 cursor-pointer">
+                        </div>
+                        <button onclick="saveProfile()" class="w-full bg-slate-900 dark:bg-slate-700 text-white font-semibold py-2.5 rounded-xl hover:bg-slate-800 dark:hover:bg-slate-600 transition shadow-sm text-xs">
+                            Update Profile
+                        </button>
+                    </div>
+
+                    <!-- Theme Toggle -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Appearance Theme</h4>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setTheme('light')" id="theme-btn-light" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Light</button>
+                            <button onclick="setTheme('dark')" id="theme-btn-dark" class="bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600 py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">Dark</button>
+                            <button onclick="setTheme('system')" id="theme-btn-system" class="bg-emerald-600 text-white py-2.5 rounded-xl font-semibold text-xs transition shadow-sm">System</button>
+                        </div>
+                    </div>
+
+                    <!-- Goals Form -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-4 rounded-2xl space-y-3">
+                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">Set Daily Targets</h4>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Step Goal</label>
+                            <input type="number" id="input-goal-steps" value="10000" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Water Goal (Liters)</label>
+                            <input type="number" id="input-goal-water" step="0.5" value="3.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Daily Sleep Goal (Hours)</label>
+                            <input type="number" id="input-goal-sleep" step="0.5" value="8.0" class="w-full bg-white dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <button onclick="saveGoals()" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                            Save Goals
+                        </button>
+                    </div>
+
+                    <!-- Cloud Sync Options -->
+                    <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-5 rounded-2xl space-y-4 text-center">
+                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-1">
+                            <i data-lucide="check-circle" class="w-6 h-6"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Connected to Cloud</h4>
+                        <p id="user-email-display" class="text-xs text-slate-500 dark:text-slate-400">Signed in</p>
+                        
+                        <div class="space-y-2 pt-1">
+                            <button onclick="signOut()" class="w-full bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900 py-2.5 rounded-xl text-xs font-semibold hover:bg-red-100 transition">
+                                Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Single-Line Chart Trend & History Modal -->
+            <div id="trend-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+                <div class="bg-white dark:bg-slate-800 dark:text-white h-[65%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 id="trend-modal-title" class="text-base font-bold text-slate-800 dark:text-white">7-Day Line Trend</h3>
+                        <button onclick="closeTrendModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    </div>
+                    <p id="trend-modal-subtitle" class="text-xs text-slate-500 dark:text-slate-400">Weekly progress single-line chart.</p>
+                    
+                    <!-- SVG Line Chart Container -->
+                    <div class="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-100 dark:border-slate-600 flex flex-col items-center justify-center relative">
+                        <svg id="trend-svg-chart" class="w-full h-36 overflow-visible" viewBox="0 0 300 100">
+                            <!-- Rendered via JavaScript -->
+                        </svg>
+                        <div id="trend-chart-labels" class="flex justify-between w-full text-[10px] text-slate-400 dark:text-slate-400 mt-2 px-1">
+                            <!-- Day labels -->
+                        </div>
+                    </div>
+
+                    <div id="trend-list-container" class="space-y-2 overflow-y-auto flex-1 pr-1">
+                        <!-- Detailed values -->
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Recipe Details Modal -->
-        <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white dark:bg-slate-800 dark:text-white h-[75%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
-                <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <div class="overflow-y-auto space-y-4 pr-1">
-                    <div>
-                        <span id="modal-category" class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">Recipe</span>
-                        <h3 id="modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Recipe Name</h3>
-                    </div>
-                    <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Calories</span><strong id="modal-cals" class="text-sm text-slate-800 dark:text-white">0 kcal</strong></div>
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Protein</span><strong id="modal-protein" class="text-sm text-emerald-600 dark:text-emerald-400">0g</strong></div>
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Fiber</span><strong id="modal-fiber" class="text-sm text-blue-600 dark:text-blue-400">0g</strong></div>
+            <!-- Water Modal with Custom Date & Amount Log -->
+            <div id="water-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+                <div class="bg-white dark:bg-slate-800 dark:text-white w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-base font-bold text-slate-800 dark:text-white">Log Water Intake 💧</h3>
+                        <button onclick="closeWaterModal()" class="text-slate-400 hover:text-slate-600 p-1"><i data-lucide="x" class="w-5 h-5"></i></button>
                     </div>
                     <div>
-                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Portion / Weight</h4>
-                        <p id="modal-ingredients" class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl"></p>
+                        <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1">Date</label>
+                        <input type="date" id="water-log-date" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2.5 text-sm">
                     </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Recipe Author</h4>
-                        <p id="modal-author" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950 p-3 rounded-xl"></p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Add a glass (+250ml / +500ml) or custom amount.</p>
+                    <div class="flex space-x-3">
+                        <button onclick="addWater(250)" class="flex-1 bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-100 dark:border-cyan-800 py-3 rounded-xl font-semibold text-xs hover:bg-cyan-100 transition">+ 250 ml</button>
+                        <button onclick="addWater(500)" class="flex-1 bg-cyan-600 text-white py-3 rounded-xl font-semibold text-xs hover:bg-cyan-700 transition shadow-sm">+ 500 ml</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Workout Details Modal -->
-        <div id="workout-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
-            <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
-                <button onclick="closeWorkoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <div class="overflow-y-auto space-y-4 pr-1">
-                    <div>
-                        <span id="workout-modal-cat" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">Workout</span>
-                        <h3 id="workout-modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Workout Title</h3>
-                    </div>
-                    <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Duration</span><strong id="workout-modal-duration" class="text-sm text-slate-800 dark:text-white">20 mins</strong></div>
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span><strong id="workout-modal-burn" class="text-sm text-orange-500">200 kcal</strong></div>
-                        <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Level</span><strong id="workout-modal-level" class="text-sm text-blue-600 dark:text-blue-400">Beginner</strong></div>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Exercises & Live Simulation Previews</h4>
-                        <div id="workout-modal-exercises" class="space-y-3"></div>
+            <!-- Date-Range Summary Report Modal -->
+            <div id="summary-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+                <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                    <button onclick="closeSummaryModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <div class="overflow-y-auto space-y-4 pr-1">
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-2 py-0.5 rounded">Analytics Report</span>
+                            <h3 class="text-lg font-bold text-slate-800 dark:text-white mt-1">Date-Range Health Summary</h3>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">Start Date</label>
+                                <input type="date" id="report-start" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-500 mb-1">End Date</label>
+                                <input type="date" id="report-end" class="w-full bg-slate-50 dark:bg-slate-700 dark:text-white border border-slate-200 dark:border-slate-600 rounded-xl p-2 text-xs">
+                            </div>
+                        </div>
+                        <button onclick="generateDateRangeReport()" class="w-full bg-indigo-600 text-white font-semibold py-2 rounded-xl hover:bg-indigo-700 transition shadow-sm text-xs">
+                            Generate Report
+                        </button>
+                        <div id="summary-content" class="bg-slate-50 dark:bg-slate-700 p-4 rounded-xl text-xs space-y-2">
+                            <p class="text-slate-400 text-center">Select date range and click generate.</p>
+                        </div>
+                        <button onclick="alert('Report exported successfully!')" class="w-full bg-emerald-600 text-white font-semibold py-2.5 rounded-xl hover:bg-emerald-700 transition shadow-sm text-xs">
+                            Export Report File
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Sticky Bottom Navigation Bar -->
-        <nav id="bottom-nav" class="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 flex justify-between items-center shadow-lg z-20 shrink-0 transition-colors duration-200">
-            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-emerald-600 dark:text-emerald-400 transition">
-                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Home</span>
-            </button>
-            <button onclick="switchTab('meals')" id="nav-meals" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                <i data-lucide="utensils" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Meals</span>
-            </button>
-            <button onclick="switchTab('workouts')" id="nav-workouts" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                <i data-lucide="dumbbell" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Workouts</span>
-            </button>
-            <button onclick="switchTab('therapy')" id="nav-therapy" class="nav-btn hidden flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                <i data-lucide="syringe" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Therapy</span>
-            </button>
-            <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
-                <i data-lucide="settings" class="w-5 h-5"></i>
-                <span class="text-[10px] font-medium mt-1">Settings</span>
-            </button>
-        </nav>
+            <!-- Recipe Details Modal -->
+            <div id="recipe-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+                <div class="bg-white dark:bg-slate-800 dark:text-white h-[75%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                    <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <div class="overflow-y-auto space-y-4 pr-1">
+                        <div>
+                            <span id="modal-category" class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 rounded">Recipe</span>
+                            <h3 id="modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Recipe Name</h3>
+                        </div>
+                        <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Calories</span><strong id="modal-cals" class="text-sm text-slate-800 dark:text-white">0 kcal</strong></div>
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Protein</span><strong id="modal-protein" class="text-sm text-emerald-600 dark:text-emerald-400">0g</strong></div>
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Fiber</span><strong id="modal-fiber" class="text-sm text-blue-600 dark:text-blue-400">0g</strong></div>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Portion / Weight</h4>
+                            <p id="modal-ingredients" class="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl"></p>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Recipe Author</h4>
+                            <p id="modal-author" class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950 p-3 rounded-xl"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workout Details Modal -->
+            <div id="workout-modal" class="absolute inset-0 bg-black/50 z-30 hidden flex items-end justify-center p-0">
+                <div class="bg-white dark:bg-slate-800 dark:text-white h-[85%] w-full rounded-t-3xl p-6 flex flex-col shadow-2xl relative">
+                    <button onclick="closeWorkoutModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 z-10"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <div class="overflow-y-auto space-y-4 pr-1">
+                        <div>
+                            <span id="workout-modal-cat" class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 dark:bg-blue-950 px-2 py-0.5 rounded">Workout</span>
+                            <h3 id="workout-modal-title" class="text-lg font-bold text-slate-800 dark:text-white mt-1">Workout Title</h3>
+                        </div>
+                        <div class="flex space-x-3 bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Duration</span><strong id="workout-modal-duration" class="text-sm text-slate-800 dark:text-white">20 mins</strong></div>
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Est. Burn</span><strong id="workout-modal-burn" class="text-sm text-orange-500">200 kcal</strong></div>
+                            <div><span class="text-[10px] text-slate-400 dark:text-slate-300 block">Level</span><strong id="workout-modal-level" class="text-sm text-blue-600 dark:text-blue-400">Beginner</strong></div>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">Exercises & Live Simulation Previews</h4>
+                            <div id="workout-modal-exercises" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sticky Bottom Navigation Bar -->
+            <nav id="bottom-nav" class="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 px-6 py-3 flex justify-between items-center shadow-lg z-20 shrink-0 transition-colors duration-200">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center text-emerald-600 dark:text-emerald-400 transition">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium mt-1">Home</span>
+                </button>
+                <button onclick="switchTab('meals')" id="nav-meals" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <i data-lucide="utensils" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium mt-1">Meals</span>
+                </button>
+                <button onclick="switchTab('workouts')" id="nav-workouts" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <i data-lucide="dumbbell" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium mt-1">Workouts</span>
+                </button>
+                <button onclick="switchTab('therapy')" id="nav-therapy" class="nav-btn hidden flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <i data-lucide="syringe" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium mt-1">Therapy</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span class="text-[10px] font-medium mt-1">Settings</span>
+                </button>
+            </nav>
+        </div>
 
     </div>
 
@@ -713,48 +758,93 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
+        let isSignUpMode = false;
 
-        // Listen for Supabase Auth State Changes & Sync Data
+        function toggleAuthMode() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('auth-subtitle').innerText = isSignUpMode ? 'Create a new account to start tracking.' : 'Sign in to sync your health data to the cloud.';
+            document.getElementById('auth-submit-btn').innerText = isSignUpMode ? 'Sign Up' : 'Sign In';
+            document.getElementById('auth-toggle-text').innerText = isSignUpMode ? 'Already have an account? Sign In' : "Don't have an account? Sign Up";
+        }
+
+        async function handleEmailAuth() {
+            const email = document.getElementById('auth-email').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            if (isSignUpMode) {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) {
+                    alert('Sign Up Error: ' + error.message);
+                } else {
+                    alert('Registration successful! Please check your email for confirmation if required, or sign in.');
+                    toggleAuthMode();
+                }
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    alert('Login Error: ' + error.message);
+                } else {
+                    currentUser = data.user;
+                    showAppScreen();
+                }
+            }
+        }
+
+        async function signInWithGoogle() {
+            const { error } = await supabaseClient.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+            if (error) alert('Error signing in with Google: ' + error.message);
+        }
+
+        async function signOut() {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            document.getElementById('main-app-container').classList.remove('flex');
+            document.getElementById('main-app-container').classList.add('hidden');
+            document.getElementById('screen-auth').classList.remove('hidden');
+            document.getElementById('screen-auth').classList.add('flex');
+        }
+
+        function showAppScreen() {
+            document.getElementById('screen-auth').classList.remove('flex');
+            document.getElementById('screen-auth').classList.add('hidden');
+            document.getElementById('main-app-container').classList.remove('hidden');
+            document.getElementById('main-app-container').classList.add('flex');
+            
+            if (currentUser && currentUser.email) {
+                document.getElementById('user-email-display').innerText = `Signed in as ${currentUser.email}`;
+            }
+            lucide.createIcons();
+        }
+
+        // Check active session on load
+        supabaseClient.auth.getSession().then(({ data: { session } }) => {
+            if (session) {
+                currentUser = session.user;
+                showAppScreen();
+            }
+        });
+
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
             if (session) {
                 currentUser = session.user;
-                console.log("Logged in as:", currentUser.email);
-                
-                if (currentUser.user_metadata) {
-                    const meta = currentUser.user_metadata;
-                    if (meta.full_name && userName === "Alex") {
-                        userName = meta.full_name;
-                        document.getElementById('welcome-name').innerText = userName;
-                        document.getElementById('input-profile-name').value = userName;
-                    }
-                    if (meta.avatar_url || meta.picture) {
-                        userAvatar = meta.avatar_url || meta.picture;
-                        document.getElementById('header-avatar').src = userAvatar;
-                    }
-                }
-
+                showAppScreen();
                 await fetchUserDataFromCloud();
-
-                const cloudSyncSection = document.querySelector('#screen-settings .bg-slate-50.dark\\:bg-slate-800.p-5');
-                if (cloudSyncSection) {
-                    cloudSyncSection.innerHTML = `
-                        <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-1">
-                            <i data-lucide="check-circle" class="w-6 h-6"></i>
-                        </div>
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-white">Connected to Supabase</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400">Signed in as ${currentUser.email}</p>
-                        <button onclick="signOut()" class="w-full mt-3 bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900 py-2 rounded-xl text-xs font-semibold hover:bg-red-100 transition">
-                            Sign Out
-                        </button>
-                    `;
-                    lucide.createIcons();
-                }
             }
         });
 
         async function fetchUserDataFromCloud() {
             if (!currentUser) return;
-            const { data, error } = await supabaseClient
+            const { data } = await supabaseClient
                 .from('user_profiles')
                 .select('*')
                 .eq('user_id', currentUser.id)
@@ -789,22 +879,7 @@
                 .upsert({ user_id: currentUser.id, ...updatedFields, updated_at: new Date() });
         }
 
-        async function signOut() {
-            await supabaseClient.auth.signOut();
-            window.location.reload();
-        }
-
-        async function signInWithGoogle() {
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin + window.location.pathname
-                }
-            });
-            if (error) alert('Error signing in with Google: ' + error.message);
-        }
-
-        // METRICS & LOGS ARRAYS (Real data tracking, starting at 0)
+        // METRICS & LOGS ARRAYS
         let currentSteps = 0;
         let currentWater = 0.0;
         let currentSleep = 0.0;
@@ -819,9 +894,9 @@
         let uploadedAvatarData = "";
         let currentTheme = localStorage.getItem('pulsefit_theme') || 'system';
 
-        let stepLogs = []; // Stores {date, steps}
-        let waterLogs = []; // Stores {date, amountL}
-        let sleepLogs = []; // Stores {date, hours}
+        let stepLogs = [];
+        let waterLogs = [];
+        let sleepLogs = [];
 
         const sharedCommunityRecipes = [
             { name: "Grilled Chicken & Broccoli Bowl", weight: "350g cooked", calories: 480, protein: 42, fiber: 6, author: "PulseFit" },
@@ -858,45 +933,6 @@
                     { name: "Glute Bridges", sets: "3 sets x 15 reps", tip: "Drive through your heels and squeeze your glutes at the top.", icon: "arrow-up-circle", color: "text-emerald-500" },
                     { name: "Cobra Stretch", sets: "3 sets x 20 secs", tip: "Lift chest gently off the floor while keeping shoulders down away from ears.", icon: "sunrise", color: "text-amber-500" },
                     { name: "Seated Spinal Twist", sets: "2 sets x 30 secs per side", tip: "Keep your spine tall and twist gently from the core to relieve lower back tension.", icon: "refresh-cw", color: "text-cyan-500" }
-                ]
-            },
-            {
-                id: 2,
-                title: "No-Equipment Strength Builder",
-                category: "Strength",
-                duration: "20 mins",
-                calories: 220,
-                level: "Intermediate",
-                exercises: [
-                    { name: "Walking Lunges", sets: "3 sets x 16 steps", tip: "Take controlled steps and keep your torso upright throughout.", icon: "move", color: "text-blue-600" },
-                    { name: "Bodyweight Squats", sets: "3 sets x 15 reps", tip: "Maintain an upright posture and push through your mid-foot.", icon: "arrow-down-circle", color: "text-blue-500" },
-                    { name: "Push-ups", sets: "3 sets x 12 reps", tip: "Lower your chest entirely to the level of your elbows.", icon: "shield", color: "text-orange-500" }
-                ]
-            },
-            {
-                id: 3,
-                title: "Evening Wind-Down Mobility Flow",
-                category: "Recovery",
-                duration: "10 mins",
-                calories: 70,
-                level: "Beginner",
-                exercises: [
-                    { name: "Cat-Cow Stretch", sets: "2 sets x 10 reps", tip: "Inhale as you drop your belly and look up; exhale as you arch your back.", icon: "refresh-cw", color: "text-cyan-500" },
-                    { name: "Child's Pose", sets: "2 sets x 60 secs", tip: "Settle hips back toward your heels and extend arms forward, breathing deeply.", icon: "moon", color: "text-indigo-400" },
-                    { name: "Hamstring Stretch", sets: "2 sets x 30 secs per leg", tip: "Keep your spine straight and hinge gently forward from your hips.", icon: "arrow-down", color: "text-emerald-500" },
-                    { name: "Deep Breathing & Torso Openers", sets: "2 sets x 60 secs", tip: "Inhale deeply through your nose, expanding your ribcage, and exhale slowly.", icon: "wind", color: "text-blue-400" }
-                ]
-            },
-            {
-                id: 4,
-                title: "Cardio Fat Burner Blitz",
-                category: "HIIT",
-                duration: "20 mins",
-                calories: 250,
-                level: "Intermediate",
-                exercises: [
-                    { name: "Mountain Climbers", sets: "3 sets x 40 secs", tip: "Maintain a strong plank position while driving knees forward rapidly.", icon: "trending-up", color: "text-red-500" },
-                    { name: "Jumping Jacks", sets: "3 sets x 50 secs", tip: "Stay light on your feet and maintain a high tempo.", icon: "activity", color: "text-emerald-500" }
                 ]
             }
         ];
@@ -1060,7 +1096,7 @@
             switchTab('home');
         }
 
-        // STEP LOGGING & SYNC
+        // STEP LOGGING
         function logExtraSteps() {
             const dateVal = document.getElementById('step-log-date').value || todayStr;
             const val = parseInt(document.getElementById('input-add-steps').value);
@@ -1126,7 +1162,7 @@
             if (!isNaN(val) && val >= 0) {
                 sleepLogs.push({ date: dateVal, hours: val });
                 currentSleep = sleepLogs.filter(l => l.date === todayStr).reduce((acc, l) => acc + l.hours, 0);
-                if (currentSleep === 0) currentSleep = val; // fallback
+                if (currentSleep === 0) currentSleep = val;
                 updateSleepDisplay();
                 alert(`Successfully logged ${val} hours of sleep for ${dateVal}!`);
                 switchTab('home');
@@ -1155,7 +1191,6 @@
             document.getElementById('light-sleep-bar').style.width = currentSleep > 0 ? '55%' : '0%';
         }
 
-        // SVG SINGLE-LINE CHART CHART LOGIC (True Real Data / Zero Placeholders)
         function openTrendModal(type) {
             const modal = document.getElementById('trend-modal');
             const titleEl = document.getElementById('trend-modal-title');
